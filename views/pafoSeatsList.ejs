@@ -1,0 +1,226 @@
+<%- include("partials/header",{title}) %>
+
+   
+    <div class="grid grid-cols-6" >
+        <%- include("partials/sidebar") %>
+        <div class="col-span-5" id="content-area" x-data="{ activeTab: 1 }">
+            <h2 class="px-2 py-3 "><%= title %></h2>
+
+            <div class="max-w-6xl mx-auto bg-white p-6 rounded-lg shadow-md" x-data="{ tab: 'list' }">
+                <div class="flex space-x-4 border-b pb-2 mb-4">
+                    <button @click="tab = 'list'" :class="{'font-bold border-b-2 border-blue-500 bg-green-600 rounded': tab === 'list'}" class="px-4 py-2 bg-gray-50 shadow rounded text-sm">General Info <i class="fa fa-home"></i> </button>
+                    <button @click="tab = 'form'" :class="{'font-bold border-b-2 border-blue-500 bg-green-600 rounded': tab === 'form'}" class="px-4 py-2 bg-gray-50 shadow rounded text-sm">New <i class="fa fa-plus"></i></button>
+                    <button @click="tab = 'report'" :class="{'font-bold border-b-2 border-blue-500 bg-green-600 rounded': tab === 'report'}" class="px-4 py-2 bg-gray-50 shadow rounded text-sm">Report <i class="fa fa-book"></i></button>
+                </div>
+        
+                <div x-show="tab === 'list'" class="overflow-x-auto">
+                    <h2 class="text-md mb-4 text-gray-500"> </h2>
+                    <table class="w-full border-collapse border border-gray-300">
+                      <thead class="bg-gray-200">
+                          <tr>
+                              <th class="px-4 py-2 border">Year</th>
+                              <th class="px-4 py-2 border">Committee</th>
+                              <th class="px-4 py-2 border">Nominee</th>
+                              <th class="px-4 py-2 border">Meeting</th>
+                              <th class="px-4 py-2 border">Start Date</th>
+                              <th class="px-4 py-2 border">Closing Date</th>
+                              <th class="px-4 py-2 border">Duration</th>
+                              <th class="px-4 py-2 border">Comment</th>
+                              <th class="px-4 py-2 border">Document</th>
+                              <th class="px-4 py-2 border">Action</th>
+                          </tr>
+                          
+                      </thead>
+                      <tbody>
+                          <% data.forEach((row) => { %>
+                              <tr class="border-t">
+                                  <td class="px-4 py-2 border text-center"><%= row.year %></td>
+                                  <td class="px-4 py-2 border text-center"><%= row.commitee %></td>
+                                  <td class="px-4 py-2 border text-center"><%= row.nominee %></td>
+                                  <td class="px-4 py-2 border text-center"><%= row.meeting %></td>
+                                  <td class="px-4 py-2 border text-center"><%= new Date(row.start_date).toDateString() %></td>
+                                  <td class="px-4 py-2 border text-center"><%= new Date(row.closing_date).toDateString() %></td>
+                                  <td class="px-4 py-2 border text-center"><%= row.duration %> days</td>
+                                  <td class="px-4 py-2 border text-center"><%= row.comment || "N/A" %></td>
+                                  <td class="px-4 py-2 border text-center">
+                                      <% if (row.document_upload) { %>
+                                        <a href="<%= row.document_upload %>" class="text-blue-500 underline" target="_blank">View</a>
+                                        <% } else { %>
+                                            No Document
+                                            <% } %>
+                                        </td>
+                                <td class="px-4 py-2 border text-center">
+                                    <div class="flex gap-2">
+                                        <a href="/m_epafo-seats/edit/<%= row.id %>" class="text-blue-500 bg-blue-100 px-2 py-1 rounded"><i class="fa fa-edit"></i></a>
+                                        
+                                        <a href="/m_epafo-seats/delete/<%= row.id %>" class="text-red-500 bg-red-100 px-2 py-1 rounded"><i class="fa fa-trash"></i></a>
+                                    </div>
+                                </td>
+                              </tr>
+                          <% }) %>
+                      </tbody>
+                  </table>
+                </div>
+        
+                <div x-cloak x-show="tab === 'form'" class="mt-4 max-w-4xl mx-auto">
+                    <h2 class="text-xl font-semibold mb-4">Add New</h2>
+                    <form action="/m_epafo-seats/create" method="POST" enctype="multipart/form-data" class="grid grid-cols-3 gap-4">
+                      <div>
+                          <label class="text-sm">Year</label>
+                          <select name="year" class="w-full px-4 py-2 border rounded" required>
+                              <% for (let i = 2020; i <= new Date().getFullYear() + 5; i++) { %>
+                                  <option value="<%= i %>" <%= i === new Date().getFullYear() ? 'selected' : '' %>><%= i %></option>
+                              <% } %>
+                          </select>
+                      </div>
+                      <div>
+                          <label class="text-sm">Committee</label>
+                          <input type="text" name="commitee" placeholder="Committee..." class="w-full px-4 py-2 border rounded" required>
+                      </div>
+                      <div>
+                          <label class="text-sm">Nominee</label>
+                          <input type="text" name="nominee" placeholder="Nominee..." class="w-full px-4 py-2 border rounded" required>
+                      </div>
+                      <div>
+                          <label class="text-sm">Meeting</label>
+                          <input type="text" name="meeting" placeholder="Meeting..." class="w-full px-4 py-2 border rounded" required>
+                      </div>
+                      <div>
+                          <label class="text-sm">Start Date</label>
+                          <input type="date" name="start_date" id="startDate" class="w-full px-4 py-2 border rounded" required>
+                      </div>
+                      <div>
+                          <label class="text-sm">Closing Date</label>
+                          <input type="date" name="closing_date" id="endDate" class="w-full px-4 py-2 border rounded" required>
+                      </div>
+                      <div>
+                          <label class="text-sm">Duration</label>
+                          <input type="text" readonly name="duration" id="duration" placeholder="Duration (days)..." class="bg-gray-100 w-full px-4 py-2 border rounded" required>
+                      </div>
+                      <div>
+                          <label class="text-sm">Comment</label>
+                          <textarea name="comment" placeholder="Add comments..." class="w-full px-4 py-2 border rounded"></textarea>
+                      </div>
+                      <div>
+                          <label class="text-sm">Upload Document</label>
+                          <input type="file" name="document_upload" class="w-full px-4 py-2 border rounded">
+                      </div>
+                      <div class="col-span-2">
+                          <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded">Send</button>
+                      </div>
+                  </form>
+                  
+                </div>
+
+                <div x-show="tab === 'report'" class="overflow-x-auto">
+
+             
+                    <!-- Small Table: Responsibles -->
+                    <div class=" bg-white my-2">
+                        
+                        <h2 class="text-md mb-4 text-gray-500">Report </h2>
+                        <table class="w-full border-collapse border border-gray-300">
+                          <thead class="bg-gray-200">
+                              <tr>
+                                  <th class="px-4 py-2 border">Year</th>
+                                  <th class="px-4 py-2 border">Committee</th>
+                                  <th class="px-4 py-2 border">Nominee</th>
+                                  <th class="px-4 py-2 border">Meeting</th>
+                                  <th class="px-4 py-2 border">Start Date</th>
+                                  <th class="px-4 py-2 border">Closing Date</th>
+                                  <th class="px-4 py-2 border">Duration</th>
+                                  <th class="px-4 py-2 border">Comment</th>
+                                  <th class="px-4 py-2 border">Document</th>
+                              </tr>
+                          </thead>
+                          <tbody>
+                              <% data.forEach((row) => { %>
+                                  <tr class="border-t">
+                                      <td class="px-4 py-2 border text-center"><%= row.year %></td>
+                                      <td class="px-4 py-2 border text-center"><%= row.commitee %></td>
+                                      <td class="px-4 py-2 border text-center"><%= row.nominee %></td>
+                                      <td class="px-4 py-2 border text-center"><%= row.meeting %></td>
+                                      <td class="px-4 py-2 border text-center"><%= new Date(row.start_date).toDateString() %></td>
+                                      <td class="px-4 py-2 border text-center"><%= new Date(row.closing_date).toDateString() %></td>
+                                      <td class="px-4 py-2 border text-center"><%= row.duration %> days</td>
+                                      <td class="px-4 py-2 border text-center"><%= row.comment || "N/A" %></td>
+                                      <td class="px-4 py-2 border text-center">
+                                          <% if (row.document_upload) { %>
+                                              <a href="<%= row.document_upload %>" class="text-blue-500 underline" target="_blank">View</a>
+                                          <% } else { %>
+                                              No Document
+                                          <% } %>
+                                      </td>
+                                  </tr>
+                              <% }) %>
+                          </tbody>
+                      </table>
+                      
+                    </div>
+                
+                   
+                </div>
+                
+
+
+
+            </div>            
+        </div>
+    </div>
+
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+
+<script>
+     const endDate =     document.getElementById("endDate")
+   const startDate = document.getElementById("startDate")
+   const durationInput = document.getElementById("duration")
+    document.getElementById("startDate").addEventListener("input",function(){
+        // const endDate =     document.getElementById("endDate")
+        if(endDate.value  ){
+            if(startDate.value > endDate.value ){
+                alert("Starting date can not be greater than ending date")
+                startDate.value = ""
+                return 
+            }
+            const duration = calculateDuration(this.value,endDate.value)
+            durationInput.value = duration
+        }
+        
+    })
+    document.getElementById("endDate").addEventListener("input",function(){
+        // const endDate =     document.getElementById("endDate")
+        if(startDate.value ){
+            if(startDate.value > endDate.value ){
+                alert("Starting date can not be greater than ending date")
+                endDate.value = ""
+                return 
+            }
+            const duration = calculateDuration(startDate.value,this.value)
+     
+            durationInput.value = duration
+        }
+    
+    })
+
+
+const calculateDuration = (startDate, endDate) => {
+    if (startDate && endDate) {
+        const start = new Date(startDate);
+        const end = new Date(endDate);
+        const diffTime = Math.abs(end - start);
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+       return  (diffDays > 1) ? diffDays +' Days': (diffDays == 0 )?  '24hrs ':diffDays +' Day';
+      
+        
+    }
+};
+
+</script>
+  </body>
+</html>
+
+
+    
+ 
+

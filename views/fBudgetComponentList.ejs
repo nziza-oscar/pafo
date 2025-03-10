@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= title %></title>
+    <link rel='stylesheet' href='../../../stylesheets/style.css' />
+    <link rel='stylesheet' href='../../stylesheets/tailwind.css' />
+    <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+    <script src="//unpkg.com/alpinejs" defer></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css" integrity="sha512-5A8nwdMOWrSz20fDsjczgUidUBR8liPYU+WymTZP1lmY9G6Oc7HlZv156XqnsgNUzTyMefFTcsFH/tnJE/+xBg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    <style>
+      [x-cloak]{
+        display: none !important;
+      }
+      body {
+            font-family: "Poppins", serif;
+            font-weight: 400;
+            font-style: normal;
+        }
+    </style>
+
+  </head>
+  <body>
+
+    <div class="grid grid-cols-6" >
+        <%- include("partials/sidebar") %>
+        <div class="col-span-5">
+           
+           
+            <div class="max-w-5xl  mx-auto " x-data="{ isModalOpen: false,startDate:'',
+            endDate:'',componentId:'' }">
+
+                <div>
+                    <p class="px-2 py-3 "> Project:  <strong class="text-sm"><%= title %></strong></p>
+
+                </div>
+                <div  class="">
+                    
+                    <div class="flex">
+                        <div class="flex-1">
+                            <button  class="bg-indigo-400 text-white px-4 py-2 rounded cursor-pointer" onclick="window.history.back(-1)">Back</button>
+
+                        </div>
+                        <div class="flex justify-between gap-4 ">
+                            <div class="flex-1 ">
+                                <input type="text" id="search" placeholder="Search" class="mb-4 p-2 border border-gray-300 rounded ">
+                            </div>
+                            <!-- <div>
+                                <button @click="isModalOpen = true" class="bg-blue-500 text-white px-4 py-2 rounded cursor-pointer">Add Component 43</button>
+    
+                            </div> -->
+                        </div>
+                    </div>
+                    <div x-cloak x-show="isModalOpen" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center">
+                        <div class="bg-white p-6 rounded-lg shadow-lg w-1/2">
+                            <div x-data="{ components: [{ id: Date.now() }] , maxm:0, componentBudget: <%- JSON.stringify(componentBudget) %> }">
+                                
+                                <div class="flex justify-between items-center">
+                                    <h2 class="text-xl font-bold mb-4">Budget Planning</h2>
+                                    <div>
+                                        <button @click="components.push({ id: Date.now() })" class="bg-blue-500 text-white px-2 py-1 rounded cursor-pointer"><i class="fa fa-plus"></i></button>
+                                    </div>
+                                </div>
+                            
+                                <form method="post" action="/finance-budget/components/<%= projectId %>/list">
+                                    <input type="hidden" x-model="componentId" :value="componentId" name="component_id"/>
+                                    <template x-for="(component, index) in components" :key="component.id">
+                                       <div class="flex gap-2">
+                                        <div class="mb-4 flex-1">
+                                            <label for="componentName" class="block text-sm font-medium text-gray-700">Choose Year: </label>
+                                            <div class="flex gap-2 items-center " x-data="yearSelector">
+                                                <!-- <select type="text" name="year[]"
+                                                 
+                                                class="choose-year mt-1 p-2 border border-gray-300 rounded w-full" required
+                                                 onchange="handleYearChange(this.value)">
+                                               <option>Choose Year</option>
+
+                                               <% dates.forEach((y)=>{ %> 
+                                                    <option value="<%= y %>"><%= y %></option>
+                                               <% }) %>
+                                            </select> -->
+
+                                            <select type="text" name="year" 
+                                                    class="choose-year mt-1 p-2 border border-gray-300 rounded w-full" required
+                                                    x-model="selectedYears[index]"
+                                                    @change="updateDisabledOptions()">
+                                                <option value="">Choose Year</option>
+                                                <% dates.forEach((y)=>{ %> 
+                                                    <option :value="<%= y %>" x-bind:disabled="isDisabled('<%= y %>', index)"><%= y %></option>
+                                                <% }) %>
+                                            </select>
+                                               
+                                            </div>
+                                        </div>
+
+                                        <div class="mb-4 flex-1">
+                                            <label for="componentName" class="block text-sm font-medium text-gray-700">Amount: </label>
+                                            <div class="flex gap-2 items-center">
+                                                <input type="number" name="amount[]"
+                                                placeholder="Enter Amount..." :id="'componentName' + component.id" 
+                                                class="mt-1 p-2 border border-gray-300 rounded w-full" required>
+                                               
+                                            </div>
+                                        </div>
+
+                                        <button @click="components.splice(index, 1)" type="button" class="cursor-pointer bg-red-500 text-white px-3 py-2 rounded self-center">
+                                            <i class="fa fa-trash"></i>
+                                        </button>
+                                       </div>
+                                    </template>
+                            
+                                    <div class="flex justify-end">
+                                        <button type="button" @click="isModalOpen = false" class="bg-gray-500 text-white px-4 py-2 rounded mr-2 cursor-pointer">Cancel</button>
+                                        <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded cursor-pointer ">Save</button>
+                                    </div>
+                                </form>
+                            </div>
+                            
+                        </div>
+                    </div>
+                </div>
+                
+                <table class="w-full border-collapse border border-gray-300" id="componentTable">
+                    <thead>
+                        <tr class="bg-gray-200">
+                            <th class="border px-4 py-2">#</th>
+                            <th class="border px-4 py-2">Component Name</th>
+                            <% dates.forEach((y)=>{ %> 
+                                <th class="border px-4 py-2"><%= y %></th>
+                            <% }) %>
+                            <th class="border px-4 py-2">Total</th>
+
+                            <th class="border px-4 py-2">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% let x=[]; components.forEach((component, index) => { %>
+                            <tr class="text-left">
+                                <td class="border px-4 py-2"><%= index + 1 %></td>
+                                <td class="border px-4 py-2"><%= component.name %></td>
+                                <% let used=0; let total=0; dates.forEach((y, i) => { %>
+                                    <td class="border px-4 py-2">
+                                        <%= component.BudgetPlannings[i] ? component.BudgetPlannings[i].amount_planned : 0 %>
+                                        <% total += component.BudgetPlannings[i] ? component.BudgetPlannings[i].amount_planned : 0 %>
+                                        <% used +=  component.BudgetPlannings[i] ? component.BudgetPlannings[i].amount_used : 0 %>
+                                    </td>
+                                <% }) %>                                
+                                <td class="border px-4 py-2"><%= total %></td>
+                                
+                                <td class="border px-4 py-2">
+                                    <div class="flex gap-2">
+                                        <% if(used == 0){ %>
+                                        <button 
+                                        @click="isModalOpen = true;componentId=<%= component.id %>;" 
+                                            class="bg-blue-500 text-white px-4 py-1 rounded cursor-pointer">
+                                            <% if (component.BudgetPlannings.length == 0){ %>
+                                                Add Budget
+                                            <% } else{ %>
+                                                Update Budget
+                                            <% } %> 
+                                        
+                                        </button>
+                                        <% } %>
+                                            
+                                
+                                            <% if (component.f_activities.length != 0){ %>
+                                                <a href="/finance-budget/components/<%= component.id %>/activities" 
+                                                class="bg-green-500 text-white px-4 py-1 rounded"> Activities Budget</a>
+                                            <% } %>
+                                    </div>
+                                </td>
+                            </tr>
+                        <% }) %>
+                    </tbody>
+                    <tfoot>
+                        <tr class="bg-gray-200">
+                            <th class="border px-4 py-2" colspan="2">Total</th>
+                            <% let allTotal = 0; dates.forEach((y, i) => { %>
+                                <th class="border px-4 py-2">
+                                    <%= components.reduce((sum, component) => sum + (component.BudgetPlannings[i] ? component.BudgetPlannings[i].amount_planned : 0), 0) %>
+                                    <% allTotal += components.reduce((sum, component) => sum + (component.BudgetPlannings[i] ? component.BudgetPlannings[i].amount_planned : 0), 0) %>
+                                </th>
+                            <% }) %>
+
+                            <th class="border px-4 py-2">
+                                <%= allTotal  %>
+                            </th>
+                        </tr>
+                    </tfoot>
+                    
+                </table>
+            </div>
+            
+        </div>
+    </div>
+
+   
+
+
+    <script>
+       function handleYearChange(selectedValue) {
+    const selects = document.querySelectorAll('.choose-year');
+    const selectedYears = new Set();
+
+    // Collect selected values
+    selects.forEach(select => {
+        if (select.value !== "Choose Year") {
+            selectedYears.add(select.value);
+        }
+    });
+
+    // Disable selected years in other dropdowns
+    selects.forEach(select => {
+        select.querySelectorAll('option').forEach(option => {
+            if (option.value !== "Choose Year") {
+                
+                option.disabled = selectedYears.has(option.value) && option.value !== select.value;
+            }
+        });
+    });
+}
+
+
+
+        document.getElementById("search").addEventListener("input", function () {
+            let filter = this.value.toLowerCase();
+            let rows = document.querySelectorAll("#componentTable tr");
+    
+            rows.forEach(row => {
+                let projectName = row.children[1].textContent.toLowerCase();
+                row.style.display = projectName.includes(filter) ? "" : "none";
+            });
+        });
+    </script>
+</body>
+</html>

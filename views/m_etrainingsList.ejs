@@ -1,0 +1,326 @@
+<%- include("partials/header",{title}) %>
+
+   
+    <div class="grid grid-cols-6" >
+        <%- include("partials/sidebar") %>
+        <div class="col-span-5" id="content-area" x-data="{ activeTab: 1 }">
+            <h2 class="px-2 py-3 "><%= title %></h2>
+
+            <% if (messages.success && messages.success.length > 0) { %>
+                <div class="bg-green-500 text-white p-4 rounded mb-4">
+                  <p><%= messages.success %></p>
+                </div>
+              <% } %>
+              
+              <% if (messages.error && messages.error.length > 0) { %>
+                <div class="bg-red-500 text-white p-4 rounded mb-4">
+                  <p><%= messages.error %></p>
+                </div>
+              <% } %>
+              
+            <div class="max-w-6xl mx-auto bg-white p-6 rounded-lg shadow-md" x-data="{ tab: 'list' }">
+                <div class="flex space-x-4 border-b pb-2 mb-4">
+                    <button @click="tab = 'list'" :class="{'font-bold border-b-2 border-blue-500 bg-green-600 rounded': tab === 'list'}" class="px-4 py-2 bg-gray-50 shadow rounded text-sm">Basic Info <i class="fa fa-home"></i> </button>
+                    <button @click="tab = 'form'" :class="{'font-bold border-b-2 border-blue-500 bg-green-600 rounded': tab === 'form'}" class="px-4 py-2 bg-gray-50 shadow rounded text-sm">New <i class="fa fa-plus"></i></button>
+                    <button @click="tab = 'report'" :class="{'font-bold border-b-2 border-blue-500 bg-green-600 rounded': tab === 'report'}" class="px-4 py-2 bg-gray-50 shadow rounded text-sm">Report <i class="fa fa-book"></i></button>
+                </div>
+        
+                <div x-show="tab === 'list'" class="overflow-x-auto">
+                    <h2 class="text-md mb-4 text-gray-500">Trainings </h2>
+                    <table class="min-w-full bg-white border">
+                        <thead>
+                            <tr class="bg-gray-100">
+                                <th class="px-4 py-2 whitespace-nowrap">#</th>
+                                <th class="px-4 py-2 whitespace-nowrap">Title</th>
+                                <th class="px-4 py-2 whitespace-nowrap">Type</th>
+                                <th class="px-4 py-2 whitespace-nowrap">Venue</th>
+                                <th class="px-4 py-2 whitespace-nowrap">Participants</th>
+                                <th class="px-4 py-2 whitespace-nowrap">Women</th>
+                                <th class="px-4 py-2 whitespace-nowrap">Men</th>
+                                <th class="px-4 py-2 whitespace-nowrap">Youth</th>
+                                <th class="px-4 py-2 whitespace-nowrap">Year</th>
+                                <th class="px-4 py-2 whitespace-nowrap">Start Date</th>
+                                <th class="px-4 py-2 whitespace-nowrap">End Date</th>
+                                <th class="px-4 py-2 whitespace-nowrap">Duration</th>
+                                <th class="px-4 py-2 whitespace-nowrap">Program</th>
+                                <th class="px-4 py-2 whitespace-nowrap">Description</th>
+                                <th class="px-4 py-2 whitespace-nowrap">Comments</th>
+                                <th class="px-4 py-2 whitespace-nowrap">Document</th>
+                                <th class="px-4 py-2 whitespace-nowrap">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% if (data.length > 0) { %>
+                                <% data.forEach((item, index) => { %>
+                                    <tr class="border-t">
+                                        <td class="px-4 py-2 whitespace-nowrap text-sm"><%= index + 1 %></td>
+                                        <td class="px-4 py-2 whitespace-nowrap text-sm"><%= item.title %></td>
+                                        <td class="px-4 py-2 whitespace-nowrap text-sm"><%= item.type %></td>
+                                        <td class="px-4 py-2 whitespace-nowrap text-sm"><%= item.venue %></td>
+                                        <td class="px-4 py-2 whitespace-nowrap text-sm"><%= item.participants %></td>
+                                        <td class="px-4 py-2 whitespace-nowrap text-sm"><%= item.women %></td>
+                                        <td class="px-4 py-2 whitespace-nowrap text-sm"><%= item.men %></td>
+                                        <td class="px-4 py-2 whitespace-nowrap text-sm"><%= item.youth %></td>
+                                        <td class="px-4 py-2 whitespace-nowrap text-sm"><%= item.year %></td>
+                                        <td class="px-4 py-2 whitespace-nowrap text-sm"><%= new Date(item.starting_date).toISOString().split('T')[0] %></td>
+                                        <td class="px-4 py-2 whitespace-nowrap text-sm"><%= new Date(item.ending_date).toISOString().split('T')[0] %></td>
+                                        <td class="px-4 py-2 whitespace-nowrap text-sm"><%= item.duration %> days</td>
+                                        <td class="px-4 py-2 whitespace-nowrap text-sm"><%= item.program %></td>
+                                        <td class="px-4 py-2 whitespace-nowrap text-sm"><%= item.description || 'N/A' %></td>
+                                        <td class="px-4 py-2 whitespace-nowrap text-sm"><%= item.comments || 'N/A' %></td>
+                                        <td class="px-4 py-2 whitespace-nowrap">
+                                            <% if (item.document_upload != "") { %>
+                                                <a href="<%= item.document_upload %>" class="text-blue-500 bg-blue-100 px-2 py-1 rounded" download>
+                                                    <i class="fa fa-download"></i> Download
+                                                </a>
+                                            <% } else { %>
+                                                <span class="text-gray-500">No File</span>
+                                            <% } %>
+                                        </td>
+                                        
+                                        <td class="px-4 py-2 whitespace-nowrap text-sm">
+                                            <div class="flex gap-2">
+                                                <a href="/m_etrainings/edit/<%= item.id %>" class="text-blue-500 bg-blue-100 px-2 py-1 rounded"><i class="fa fa-edit"></i></a>
+                                                <a href="/m_etrainings/view/<%= item.id %>" class="text-blue-500 bg-blue-100 px-2 py-1 rounded"><i class="fa fa-eye"></i></a>
+                                                <a href="/m_etrainings/delete/<%= item.id %>" class="text-red-500 bg-red-100 px-2 py-1 rounded"><i class="fa fa-trash"></i></a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                <% }); %>
+                            <% } else { %>
+                                <tr>
+                                    <td colspan="16" class="px-4 py-2 text-center text-gray-500">No records found</td>
+                                </tr>
+                            <% } %>
+                        </tbody>
+                    </table>
+                    
+                </div>
+        
+                <div x-cloak x-show="tab === 'form'" class="mt-4 max-w-4xl mx-auto">
+                   <div>
+                    <h2 class="text-xl font-semibold mb-4">New Training</h2>
+
+                    <form action="/m_etrainings/create" method="POST"  enctype="multipart/form-data">
+                 
+                        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                            <div>
+                                <label class="text-sm">Title</label>
+                                <input type="text" name="title" class="w-full px-4 py-2 border rounded" required>
+                            </div>
+                        
+                            <div>
+                                <label class="text-sm">Type</label>
+                                <input type="text" name="type" class="w-full px-4 py-2 border rounded" required>
+                            </div>
+                        
+                            <div>
+                                <label class="text-sm">Venue</label>
+                                <input type="text" name="venue" class="w-full px-4 py-2 border rounded" required>
+                            </div>
+                        
+                            <div>
+                                <label class="text-sm">Participants</label>
+                                <input type="text" name="participants" class="w-full px-4 py-2 border rounded" required>
+                            </div>
+                        
+                            <div>
+                                <label class="text-sm">Women</label>
+                                <input type="number" name="women" class="w-full px-4 py-2 border rounded" required>
+                            </div>
+                        
+                            <div>
+                                <label class="text-sm">Men</label>
+                                <input type="number" name="men" class="w-full px-4 py-2 border rounded" required>
+                            </div>
+                        
+                            <div>
+                                <label class="text-sm">Youth</label>
+                                <input type="number" name="youth" class="w-full px-4 py-2 border rounded" required>
+                            </div>
+                            <div>
+                                <label class="text-sm">Total Number</label>
+                                <input type="number" name="total_number" class="w-full px-4 py-2 border rounded" required>
+                            </div>
+                            <div>
+                                <label class="text-sm">Year</label>
+                                <select name="year" class="w-full px-4 py-2 border rounded">
+                                    <% for (let i = 2020; i <= new Date().getFullYear() + 5; i++) { %>
+                                        <option value="<%= i %>" <%= i === new Date().getFullYear() ? 'selected' : '' %>><%= i %></option>
+                                    <% } %>
+                                </select>
+                            </div>
+                        
+                            <div>
+                                <label class="text-sm">Starting Date</label>
+                                <input type="date" name="starting_date" id="startDate" class="w-full px-4 py-2 border rounded" required>
+                            </div>
+                        
+                            <div>
+                                <label class="text-sm">Ending Date</label>
+                                <input type="date" name="ending_date" id="endDate" class="w-full px-4 py-2 border rounded" required>
+                            </div>
+                        
+                            <div>
+                                <label class="text-sm">Duration (Days)</label>
+                                <input type="text" placeholder="Duration" readonly name="duration" id="duration" class="bggray100 w-full px-4 py-2 border rounded" required>
+                            </div>
+                        
+                            <div>
+                                <label class="text-sm">Program</label>
+                                <input type="text" name="program" class="w-full px-4 py-2 border rounded" required>
+                            </div>
+                        
+                            <div class="">
+                                <label class="text-sm">Description</label>
+                                <textarea name="description" class="w-full px-4 py-2 border rounded"></textarea>
+                            </div>
+
+                            <div class="">
+                                <label class="text-sm">Document Upload</label>
+                                <input type="file" name="document_upload" 
+                                class="w-full px-4 py-2 border rounded">
+                            </div>
+                        
+                            <div class="col-span-1 sm:col-span-3">
+                                <label class="text-sm">Comments</label>
+                                <textarea name="comments" class="w-full px-4 py-2 border rounded"></textarea>
+                            </div>
+                        
+                        </div>
+                            <div >
+                                <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded">Save</button>
+                            </div>
+                    </form>
+                   </div>
+                </div>
+
+                <div x-cloak x-show="tab === 'report'" class="">
+                    <div class="flex justify-between items-center">
+                        <h2 class="text-md mb-4 text-gray-500">Report</h2>
+                        <a href="m_etrainings/download" class="bg-success text-white py-2 px-3 rounded hover:text-green-800 flex items-center space-x-2">
+                            <i class="fa fa-book"></i> <!-- Excel icon -->
+                            <span>Export Excel</span>
+                        </a>
+                    </div>
+
+                    <div class=" bg-white my-2 overflow-x-auto">
+                
+                        <table class="min-w-full bg-white border">
+                            <thead>
+                                <tr class="bg-gray-100">
+                                    <th class="px-4 py-2 whitespace-nowrap">#</th>
+                                    <th class="px-4 py-2 whitespace-nowrap">Title</th>
+                                    <th class="px-4 py-2 whitespace-nowrap">Type</th>
+                                    <th class="px-4 py-2 whitespace-nowrap">Venue</th>
+                                    <th class="px-4 py-2 whitespace-nowrap">Participants</th>
+                                    <th class="px-4 py-2 whitespace-nowrap">Women</th>
+                                    <th class="px-4 py-2 whitespace-nowrap">Men</th>
+                                    <th class="px-4 py-2 whitespace-nowrap">Youth</th>
+                                    <th class="px-4 py-2 whitespace-nowrap">Year</th>
+                                    <th class="px-4 py-2 whitespace-nowrap">Start Date</th>
+                                    <th class="px-4 py-2 whitespace-nowrap">End Date</th>
+                                    <th class="px-4 py-2 whitespace-nowrap">Duration</th>
+                                    <th class="px-4 py-2 whitespace-nowrap">Program</th>
+                                    <th class="px-4 py-2 whitespace-nowrap">Description</th>
+                                    <th class="px-4 py-2 whitespace-nowrap">Comments</th>
+                             
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% if (data.length > 0) { %>
+                                    <% data.forEach((item, index) => { %>
+                                        <tr class="border-t">
+                                            <td class="px-4 py-2 whitespace-nowrap text-sm"><%= index + 1 %></td>
+                                            <td class="px-4 py-2 whitespace-nowrap text-sm"><%= item.title %></td>
+                                            <td class="px-4 py-2 whitespace-nowrap text-sm"><%= item.type %></td>
+                                            <td class="px-4 py-2 whitespace-nowrap text-sm"><%= item.venue %></td>
+                                            <td class="px-4 py-2 whitespace-nowrap text-sm"><%= item.participants %></td>
+                                            <td class="px-4 py-2 whitespace-nowrap text-sm"><%= item.women %></td>
+                                            <td class="px-4 py-2 whitespace-nowrap text-sm"><%= item.men %></td>
+                                            <td class="px-4 py-2 whitespace-nowrap text-sm"><%= item.youth %></td>
+                                            <td class="px-4 py-2 whitespace-nowrap text-sm"><%= item.year %></td>
+                                            <td class="px-4 py-2 whitespace-nowrap text-sm"><%= new Date(item.starting_date).toISOString().split('T')[0] %></td>
+                                            <td class="px-4 py-2 whitespace-nowrap text-sm"><%= new Date(item.ending_date).toISOString().split('T')[0] %></td>
+                                            <td class="px-4 py-2 whitespace-nowrap text-sm"><%= item.duration %> days</td>
+                                            <td class="px-4 py-2 whitespace-nowrap text-sm"><%= item.program %></td>
+                                            <td class="px-4 py-2 whitespace-nowrap text-sm"><%= item.description || 'N/A' %></td>
+                                            <td class="px-4 py-2 whitespace-nowrap text-sm"><%= item.comments || 'N/A' %></td>
+                                     
+                                        </tr>
+                                    <% }); %>
+                                <% } else { %>
+                                    <tr>
+                                        <td colspan="16" class="px-4 py-2 text-center text-gray-500">No records found</td>
+                                    </tr>
+                                <% } %>
+                            </tbody>
+                        </table>
+                        
+                    </div>
+
+                </div>
+                
+
+
+
+            </div>            
+        </div>
+    </div>
+
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+
+<script>
+     const endDate =     document.getElementById("endDate")
+   const startDate = document.getElementById("startDate")
+   const durationInput = document.getElementById("duration")
+    document.getElementById("startDate").addEventListener("input",function(){
+        // const endDate =     document.getElementById("endDate")
+        if(endDate.value  ){
+            if(startDate.value > endDate.value ){
+                alert("Starting date can not be greater than ending date")
+                startDate.value = ""
+                return 
+            }
+            const duration = calculateDuration(this.value,endDate.value)
+            durationInput.value = duration
+        }
+        
+    })
+    document.getElementById("endDate").addEventListener("input",function(){
+        // const endDate =     document.getElementById("endDate")
+        if(startDate.value ){
+            if(startDate.value > endDate.value ){
+                alert("Starting date can not be greater than ending date")
+                endDate.value = ""
+                return 
+            }
+            const duration = calculateDuration(startDate.value,this.value)
+     
+            durationInput.value = duration
+        }
+    
+    })
+
+
+const calculateDuration = (startDate, endDate) => {
+    if (startDate && endDate) {
+        const start = new Date(startDate);
+        const end = new Date(endDate);
+        const diffTime = Math.abs(end - start);
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+       return  (diffDays > 1) ? diffDays +' Days': (diffDays == 0 )?  '24hrs ':diffDays +' Day';
+      
+        
+    }
+};
+
+</script>
+  </body>
+</html>
+
+
+    
+ 
+

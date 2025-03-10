@@ -1,0 +1,88 @@
+ /* Custom styling for the Google Translate dropdown to match Tailwind's styles */
+ .goog-te-banner-frame {
+  display: none !important;
+}
+
+body {
+  top: 0px !important;
+}
+
+a {
+  text-decoration: none;
+}
+
+.goog-te-combo {
+  background-color: #f9fafb;
+  /* Tailwind's bg-gray-100 */
+  color: #4CAF50;
+  /* Tailwind's text-pafo-green */
+  border: 1px solid #d1d5db;
+  /* Tailwind's border-gray-300 */
+  padding: 0.5rem 1rem;
+  /* Tailwind's padding values */
+  border-radius: 0.375rem;
+  /* Tailwind's rounded-md */
+  font-size: 1rem;
+  /* Tailwind's text-base */
+}
+
+/* hover styles */
+.goog-te-combo:hover {
+  background-color: #e5e7eb;
+  /* Tailwind's hover:bg-gray-200 */
+  border-color: #9ca3af;
+  /* Tailwind's hover:border-gray-400 */
+}
+
+/* hide the Google logo */
+img[src="https://www.gstatic.com/images/branding/googlelogo/1x/googlelogo_color_42x16dp.png"] {
+  display: none;
+}
+
+.VIpgJd-ZVi9od-l4eHX-hSRGPd {
+  display: none;
+}
+
+div.skiptranslate.goog-te-gadget {
+  visibility: hidden;
+  /* Hides the text without removing layout */
+}
+
+div.skiptranslate.goog-te-gadget select {
+  visibility: visible;
+  /* Ensures the dropdown is still visible */
+}
+
+
+/* hide the popup */
+.skiptranslate>iframe {
+  height: 0 !important;
+  border-style: none;
+  box-shadow: none;
+}
+
+:root {
+  /* Main PAFO green */
+  --pafo-green-50: #f2f8f2;
+  /* Lightest */
+  --pafo-green-100: #e6f0e6;
+  --pafo-green-200: #c8e0c8;
+  --pafo-green-300: #4CAF50;
+  /* Primary PAFO green */
+  --pafo-green-400: #43a047;
+  --pafo-green-500: #388e3c;
+  --pafo-green-600: #2e7d32;
+  --pafo-green-700: #1b5e20;
+  /* Darkest */
+
+  /* Semantic variations */
+  --pafo-green-primary: var(--pafo-green-300);
+  --pafo-green-hover: var(--pafo-green-400);
+  --pafo-green-active: var(--pafo-green-500);
+  --pafo-green-text: var(--pafo-green-700);
+}
+
+
+.bg-success {
+ background-color: var(--pafo-green-600);
+}

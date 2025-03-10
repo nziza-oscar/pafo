@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= title %></title>
+    <link rel='stylesheet' href='../../stylesheets/style.css' />
+    <link rel='stylesheet' href='../../stylesheets/tailwind.css' />
+    <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+    <script src="//unpkg.com/alpinejs" defer></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css" integrity="sha512-5A8nwdMOWrSz20fDsjczgUidUBR8liPYU+WymTZP1lmY9G6Oc7HlZv156XqnsgNUzTyMefFTcsFH/tnJE/+xBg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    <style>
+      [x-cloak]{
+        display: none !important;
+      }
+      body {
+            font-family: "Poppins", serif;
+            font-weight: 400;
+            font-style: normal;
+        }
+    </style>
+
+  </head>
+  <body>
+    
+    <div class="grid grid-cols-6" >
+        <%- include("partials/sidebar") %>
+  
+      <div class="col-span-5" id="content-area" x-data="{ activeTab: 2 }">
+        
+        <div class="tabs  ">
+
+              <!-- Tab Navigation -->
+              <div class="flex space-x-4 justify-start py-3 w-2xl mx-auto bg-gray-100 px-3 ">
+                <!-- <button
+                    :class="{ 'bg-success': activeTab === 1 }"
+                    @click="activeTab = 1"
+                    class="bg-green-500 text-white rounded outline-none  px-3 py-2"
+                >
+                    New
+                </button> -->
+                <button
+                    :class="{ 'bg-success': activeTab === 2 }"
+                    @click="activeTab = 2"
+                    class="bg-green-500 text-white rounded outline-none  px-3 py-2"
+                >
+                    Partners
+                </button>
+
+                <button
+                    :class="{ 'bg-success': activeTab === 3 }"
+                    @click="activeTab = 3"
+                    class="bg-green-500 text-white rounded outline-none  px-3 py-2"
+                >
+                    Responsibilities
+                </button>
+
+                <button
+                    :class="{ 'bg-success': activeTab === 4 }"
+                    @click="activeTab = 4"
+                    class="bg-green-500 text-white rounded outline-none  px-3 py-2"
+                >
+                    Activities
+                </button>
+
+                <button
+                    :class="{ 'bg-success': activeTab === 5 }"
+                    @click="activeTab = 5"
+                    class="bg-green-500 text-white border rounded outline-none  px-3 py-2"
+                >
+                    Budget
+                </button>
+
+                <!-- <button
+                :class="{ 'bg-success': activeTab === 4 }"
+                @click="activeTab = 4"
+                class="bg-green-500 text-white rounded outline-none  px-3 py-2"
+                >
+                    Tab 3
+                </button>
+
+                <button
+                :class="{ 'bg-success': activeTab === 5 }"
+                @click="activeTab = 5"
+                class="bg-green-500 text-white rounded outline-none  px-3 py-2"
+                >
+                    Tab 3
+                </button>
+
+                <button
+                :class="{ 'bg-success': activeTab === 6 }"
+                @click="activeTab = 6"
+                class="bg-green-500 text-white rounded outline-none  px-3 py-2"
+                >
+                    Tab 3
+                </button> -->
+
+            </div>
+            <div x-cloak x-show="activeTab === 2" class="w-2xl mx-auto py-3">
+                <div x-data="{ showModal: false }">
+                    <!-- Header with Add New button -->
+                    <div class="flex justify-between">
+                        <h4 class="px-2 py-3 font-bold">Partners</h4>
+                       <div>
+                        <button @click="showModal = true" class="px-4 py-1 bg-success text-white rounded">Add New</button>
+                       </div>
+                    </div>
+
+                    <div x-show="showModal" class="fixed inset-0 flex items-center justify-center bg-gray-900
+                    bg-opacity-75 ">
+                       <div class="bg-white p-6 rounded shadow-lg w-md">
+                           <form action="/partnership/<%= data.id %>/partner" method="post">
+                               <div class="flex justify-between">
+                                   <h2 class="text-lg font-bold mb-4">New Partner</h2>
+                                   <div> <button type="button" id="add-additional-partner" class="px-3 py-1 bg-green-500 text-white rounded">add new</button></div>
+                               </div>
+                               
+                               <div id="otherpartners">
+                               <div class="flex gap-2 items-end">
+                                       <div class="flex-1">
+                                           <label class="text-sm font-bold py-1 block">Patner:</label>
+                                           <input type="text" name="partner[]" class="px-3 py-1 w-full rounded border outline-noneme-2" placeholder="Enter partner" required>
+                                       </div>
+                                    
+                                           <button type="button" class="self-end px-3 py-1 rounded bg-red-600 text-white remove-responsible"><i class="fa fa-trash remove-responsible"></i></button>
+                                       
+                               </div>
+                               </div>
+                               
+                               <div class="flex justify-end mt-4">
+                                   <button @click="showModal = false" class="px-4 py-2 bg-gray-500 text-white rounded mr-2">Cancel</button>
+                                   <button class="px-4 py-2 bg-green-500 text-white rounded">Save</button>
+                               </div>
+                           </form>
+                       </div>
+                   </div>
+               </div>
+               
+               <div class="table-responsive px-3">
+                <table class="table table-bordered table-striped w-full">
+                    <thead class="table-primary">
+                        <tr>
+                            <th class="px-2 py-2 border-b text-gray-600 whitespace-nowrap">No</th>
+                            <th class="px-2 py-2 border-b text-gray-600 whitespace-nowrap">Partner Name</th>
+                            <th class="px-2 py-2 border-b text-gray-600 whitespace-nowrap">action</th>
+                         
+                            
+                        </tr>
+                    </thead>
+                    <tbody>
+                        
+                        <% partner.forEach((p, index) => { %>
+                            <tr>
+                              <td class="px-2 py-2 border-b text-gray-600 whitespace-nowrap text-center"><%= index + 1 %></td>
+                              <td class="px-2 py-2 border-b text-gray-600 whitespace-nowrap text-center"><%= p.name %></td>
+                              <td class="px-2 py-2 border-b text-gray-600 whitespace-nowrap text-center">
+                                
+                              </td>
+                            </tr>
+                          <% }); %>
+                          
+                    </tbody>
+                </table>
+                </div>
+        </div>
+        <div x-cloak x-show="activeTab === 3" class="w-2xl mx-auto py-3">
+            <div x-data="{ showModal: false }">
+                <!-- Header with Add New button -->
+                <div class="flex justify-between">
+                    <h4 class="px-2 py-3 font-bold">Responsibilities</h4>
+                   <div>
+                    <button @click="showModal = true" class="px-4 py-1 bg-success text-white rounded">Add New</button>
+                   </div>
+                </div>
+            
+                <!-- Modal -->
+                <div x-show="showModal" class="fixed inset-0 flex items-center justify-center bg-gray-900
+                 bg-opacity-75 ">
+                    <div class="bg-white p-6 rounded shadow-lg w-md">
+                        <form action="/partnership/<%= data.id %>/responsibilities" method="post">
+                            <div class="flex justify-between">
+                                <h2 class="text-lg font-bold mb-4">New Responsibilities</h2>
+                                <div> <button type="button" id="add-responsible" class="px-3 py-1 bg-green-500 text-white rounded">add new</button></div>
+                            </div>
+                            
+                            <div id="responsible">
+                            <div class="flex gap-2 items-end">
+                                    <div class="flex-1">
+                                        <label class="text-sm font-bold py-1 block">Responsibility:</label>
+                                        <input type="text" name="partner[]" class="px-3 py-1 w-full rounded border outline-noneme-2" placeholder="Enter partner" required>
+                                    </div>
+                                 
+                                        <button type="button" class="self-end px-3 py-1 rounded bg-red-600 text-white remove-responsible"><i class="fa fa-trash remove-responsible"></i></button>
+                                    
+                            </div>
+                            </div>
+                            
+                            <div class="flex justify-end mt-4">
+                                <button @click="showModal = false" class="px-4 py-2 bg-gray-500 text-white rounded mr-2">Cancel</button>
+                                <button class="px-4 py-2 bg-green-500 text-white rounded">Save</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="table-responsive px-3">
+                <table class="table table-bordered table-striped w-full">
+                    <thead class="table-primary">
+                        <tr>
+                            <th class="px-2 py-2 border-b text-gray-600 whitespace-nowrap">No</th>
+                            <th class="px-2 py-2 border-b text-gray-600 whitespace-nowrap">Responsibility</th>
+                            <th class="px-2 py-2 border-b text-gray-600 whitespace-nowrap">action</th>
+                           
+                            
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% responsibilities.forEach((p, index) => { %>
+                            <tr>
+                              <td class="px-2 py-2 border-b text-gray-600 whitespace-nowrap text-center"><%= index + 1 %></td>
+                              <td class="px-2 py-2 border-b text-gray-600 whitespace-nowrap text-center"><%= p.name %></td>
+                              <td class="px-2 py-2 border-b text-gray-600 whitespace-nowrap text-center">
+                                
+                              </td>
+                            </tr>
+                          <% }); %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+
+        <div x-cloak x-show="activeTab === 4" class="w-2xl mx-auto py-3">
+            <div x-data="{ showModal: false }">
+                <!-- Header with Add New button -->
+                <div class="flex justify-between">
+                    <h4 class="px-2 py-3 font-bold">Activities</h4>
+                   <div>
+                    <button @click="showModal = true" class="px-4 py-1 bg-success text-white rounded">Add New</button>
+                   </div>
+                </div>
+            
+                <!-- Modal -->
+                <div x-show="showModal" class="fixed inset-0 flex items-center justify-center bg-gray-900
+                 bg-opacity-75 ">
+                    <div class="bg-white p-6 rounded shadow-lg w-md">
+                        <form action="/partnership/<%= data.id %>/meactivitities" method="post">
+                            <div class="flex justify-between">
+                                <h2 class="text-lg font-bold mb-4">New Activities</h2>
+                                <div> <button type="button" id="add-activity" 
+                                    class="px-3 py-1 bg-green-500 text-white rounded">add new</button></div>
+                            </div>
+                            
+                            <div id="activities">
+                            <div class="flex gap-2 items-end">
+                                    <div class="flex-1">
+                                        <label class="text-sm font-bold py-1 block">Activity:</label>
+                                        <input type="text" name="partner[]" class="px-3 py-1 w-full rounded border outline-noneme-2" placeholder="Enter partner" required>
+                                    </div>
+                                 
+                                        <button type="button" class="self-end px-3 py-1 rounded bg-red-600 text-white remove-responsible"><i class="fa fa-trash remove-responsible"></i></button>
+                                    
+                            </div>
+                            </div>
+                            
+                            <div class="flex justify-end mt-4">
+                                <button @click="showModal = false" class="px-4 py-2 bg-gray-500 text-white rounded mr-2">Cancel</button>
+                                <button class="px-4 py-2 bg-green-500 text-white rounded">Save</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="table-responsive px-3">
+                <table class="table table-bordered table-striped w-full">
+                    <thead class="table-primary">
+                        <tr>
+                            <th class="px-2 py-2 border-b text-gray-600 whitespace-nowrap">No</th>
+                            <th class="px-2 py-2 border-b text-gray-600 whitespace-nowrap">Activity</th>
+                            <th class="px-2 py-2 border-b text-gray-600 whitespace-nowrap">action</th>
+                           
+                            
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% activities.forEach((p, index) => { %>
+                            <tr>
+                              <td class="px-2 py-2 border-b text-gray-600 whitespace-nowrap text-center"><%= index + 1 %></td>
+                              <td class="px-2 py-2 border-b text-gray-600 whitespace-nowrap text-center"><%= p.name %></td>
+                              <td class="px-2 py-2 border-b text-gray-600 whitespace-nowrap text-center">
+                                
+                              </td>
+                            </tr>
+                          <% }); %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div x-cloak x-show="activeTab === 5" class="w-2xl mx-auto py-3">
+            <div x-data="{ showModal: false }">
+                <!-- Header with Add New button -->
+                <div class="flex justify-between">
+                    <h4 class="px-2 py-3 font-bold">Activities</h4>
+                   <div>
+                    <button @click="showModal = true" class="px-4 py-1 bg-success text-white rounded">Add New</button>
+                   </div>
+                </div>
+            
+                <!-- Modal -->
+                <div x-show="showModal" class="fixed inset-0 flex items-center justify-center bg-gray-900
+                 bg-opacity-75 ">
+                    <div class="bg-white p-6 rounded shadow-lg w-md">
+                        <form action="/partnership/<%= data.id %>/mebudget" method="post">
+                            <div class="flex justify-between">
+                                <h2 class="text-lg font-bold mb-4">New Budget</h2>
+                                <div> <button type="button" id="add-budget" 
+                                    class="px-3 py-1 bg-green-500 text-white rounded">add new</button></div>
+                            </div>
+                            
+                            <div id="budgeties">
+                            <div class="flex gap-2 items-end">
+                                    <div class="flex-1">
+                                        <label class="text-sm font-bold py-1 block">Budget:</label>
+                                        <input type="number" name="partner[]"
+                                         class="px-3 py-1 w-full rounded border outline-noneme-2" 
+                                         placeholder="Start typing..." required>
+                                    </div>
+                                 
+                                        <button type="button" class="self-end px-3 py-1 rounded bg-red-600 text-white remove-responsible"><i class="fa fa-trash remove-responsible"></i></button>
+                                    
+                            </div>
+                            </div>
+                            
+                            <div class="flex justify-end mt-4">
+                                <button @click="showModal = false" class="px-4 py-2 bg-gray-500 text-white rounded mr-2">Cancel</button>
+                                <button class="px-4 py-2 bg-green-500 text-white rounded">Save</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="table-responsive px-3">
+                <table class="table table-bordered table-striped w-full">
+                    <thead class="table-primary">
+                        <tr>
+                            <th class="px-2 py-2 border-b text-gray-600 whitespace-nowrap">No</th>
+                            <th class="px-2 py-2 border-b text-gray-600 whitespace-nowrap">Budget</th>
+                            <th class="px-2 py-2 border-b text-gray-600 whitespace-nowrap">action</th>
+                           
+                            
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% budgeting.forEach((p, index) => { %>
+                            <tr>
+                              <td class="px-2 py-2 border-b text-gray-600 whitespace-nowrap text-center"><%= index + 1 %></td>
+                              <td class="px-2 py-2 border-b text-gray-600 whitespace-nowrap text-center"><%= p.name %></td>
+                              <td class="px-2 py-2 border-b text-gray-600 whitespace-nowrap text-center">
+                                
+                              </td>
+                            </tr>
+                          <% }); %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+</div>
+</div>
+
+
+<script>
+    document.getElementById('add-responsible').addEventListener('click', function() {
+        const container = document.getElementById('responsible');
+        const div = document.createElement('div');
+        div.classList.add('flex', 'items-end','justify-between', 'gap-2');
+
+        
+        div.innerHTML = `
+            
+            <div class="flex-1">
+                <label class="text-sm font-bold py-1 block">Responsibility:</label>
+                <input type="text" name="partner[]" class="px-3 py-1 w-full rounded border outline-noneme-2" placeholder="Enter responsible" required>
+            </div>
+           
+                <button type="button" class="px-3 py-1 self-end rounded bg-red-600 text-white remove-responsible fa fa-trash">
+                    </button>
+           
+        `;
+    
+        container.appendChild(div);
+    });
+    
+    document.getElementById('add-additional-partner').addEventListener('click', function() {
+        const container = document.getElementById('otherpartners');
+        const div = document.createElement('div');
+
+        div.classList.add('flex', 'items-end','justify-between', 'gap-2');
+        
+        div.innerHTML = `
+            
+            <div class="flex-1">
+                <label class="text-sm font-bold py-1 block">Patner:</label>
+                <input type="text" name="partner[]" class="px-3 py-1 w-full rounded border outline-noneme-2"
+                 placeholder="start typing..." required>
+            </div>
+           
+            <button type="button" class="px-3 py-1 self-end rounded bg-red-600 text-white remove-responsible fa fa-trash"></button>
+         
+        `;
+    
+        container.appendChild(div);
+    });
+    
+    document.getElementById('add-activity').addEventListener('click', function() {
+        const container = document.getElementById('activities');
+        const div = document.createElement('div');
+
+        div.classList.add('flex', 'items-end','justify-between', 'gap-2');
+        
+        div.innerHTML = `
+            
+            <div class="flex-1">
+                <label class="text-sm font-bold py-1 block">Activity:</label>
+                <input type="text" name="partner[]" class="px-3 py-1 w-full rounded border outline-noneme-2"
+                 placeholder="start typing..." required>
+            </div>
+           
+            <button type="button" class="px-3 py-1 self-end rounded bg-red-600 text-white remove-responsible fa fa-trash"></button>
+         
+        `;
+    
+        container.appendChild(div);
+    });
+    
+    document.getElementById('add-budget').addEventListener('click', function() {
+        const container = document.getElementById('budgeties');
+        const div = document.createElement('div');
+
+        div.classList.add('flex', 'items-end','justify-between', 'gap-2');
+        
+        div.innerHTML = `
+            <div class="flex-1">
+                <label class="text-sm font-bold py-1 block">Budget:</label>
+                <input type="number" name="partner[]" class="px-3 py-1 w-full rounded border outline-none me-2"
+                 placeholder="start typing..." required>
+            </div>
+           
+            <button type="button" class="px-3 py-1 self-end rounded bg-red-600 text-white 
+            remove-responsible fa fa-trash"></button>
+         
+        `;
+    
+        container.appendChild(div);
+    });
+    
+
+    document.addEventListener('click', function(e) {
+        // console.log(e.target.parentElement)
+        if (e.target.classList.contains('remove-responsible')) {
+            e.target.parentElement.remove();
+        }
+    });
+</script>

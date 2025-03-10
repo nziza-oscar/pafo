@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= title %></title>
+    <link rel='stylesheet' href='../../stylesheets/style.css' />
+    <link rel='stylesheet' href='../../stylesheets/tailwind.css' />
+    <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+    <script src="//unpkg.com/alpinejs" defer></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css" integrity="sha512-5A8nwdMOWrSz20fDsjczgUidUBR8liPYU+WymTZP1lmY9G6Oc7HlZv156XqnsgNUzTyMefFTcsFH/tnJE/+xBg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    <style>
+      [x-cloak]{
+        display: none !important;
+      }
+      body {
+            font-family: "Poppins", serif;
+            font-weight: 400;
+            font-style: normal;
+        }
+        .bg-green-600{
+            background-color: #388e3c;
+            color: aliceblue;
+        }
+    </style>
+
+  </head>
+  <body>
+<div class="grid grid-cols-6" >
+    <%- include("partials/sidebar") %>
+    <div class="col-span-5" id="content-area" x-data="{ activeTab: 1 }">
+        <h2 class="px-2 py-3 "><%= title %></h2>
+
+        <div class="max-w-6xl mx-auto bg-white p-6 rounded-lg shadow-md" x-data="{ tab: 'list' }">
+            <div class="flex space-x-4 border-b pb-2 mb-4">
+                <a href="/m_egeneric"  class="px-4 py-2 bg-gray-50 shadow rounded text-sm">Back <i class="fa fa-home"></i> </a>
+                <button @click="tab = 'list'" :class="{'font-bold border-b-2 border-blue-500 bg-green-600 rounded': tab === 'list'}" 
+                class="px-4 py-2 bg-gray-50 shadow rounded text-sm">Responsiblity <i class="fa fa-book"></i> </button>
+                <button @click="tab = 'form'" :class="{'font-bold border-b-2 border-blue-500 bg-green-600 rounded': tab === 'form'}" 
+                class="px-4 py-2 bg-gray-50 shadow rounded text-sm">Activities <i class="fa fa-book"></i></button>
+                <button @click="tab = 'provider'" :class="{'font-bold border-b-2 border-blue-500 bg-green-600 rounded': tab === 'provider'}" 
+                class="px-4 py-2 bg-gray-50 shadow rounded text-sm">Providers <i class="fa fa-book"></i></button>
+
+                <button @click="tab = 'part'" :class="{'font-bold border-b-2 border-blue-500 bg-green-600 rounded': tab === 'part'}" 
+                class="px-4 py-2 bg-gray-50 shadow rounded text-sm">Partcipants <i class="fa fa-book"></i></button>
+                
+
+                <button @click="tab = 'report'" :class="{'font-bold border-b-2 border-blue-500 bg-green-600 rounded': tab === 'report'}" 
+                class="px-4 py-2 bg-gray-50 shadow rounded text-sm">General Report<i class="fa fa-book"></i></button>
+            </div>
+
+
+            <div x-show="tab === 'list'" class="overflow-x-auto">
+
+                <!-- <h2 class="text-md mb-4 text-gray-500">Additional info </h2> -->
+                <div x-data="{ showModal: false }" class=" py-3">
+                    <!-- New Button -->
+                    <button @click="showModal = true" class="float-right mb-2 px-4 text-sm py-2 bg-green-600 text-white rounded shadow flex items-center">
+                        <i class="fa fa-plus mr-2"></i> New
+                    </button>
+                
+                    <!-- Small Table: Responsibles -->
+                    <div class=" bg-white my-2">
+                        
+                        <table class="w-full border">
+                            <thead>
+                                <tr class="bg-gray-200">
+                                    <th class="px-4 py-2">#</th>
+                                    <th class="px-4 py-2">Position</th>
+                                    <th class="px-4 py-2">Responsible</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                               
+                                 <% data. m_eGenericRegisterResponsibilities.forEach((responsible,index) => { %>
+                                    <tr class="border-t">
+                                        <td class="px-4 py-2 whitespace-nowrap text-center"><%= index+1 %></td>
+                                        <td class="px-4 py-2 whitespace-nowrap text-center"><%= responsible.position %></td>
+                                        <td class="px-4 py-2 whitespace-nowrap text-center"><%= responsible.responsible %></td>
+                                    </tr>
+                                    <% }) %>
+                              
+
+                            </tbody>
+                        </table>
+                    </div>
+                
+                    <!-- Modal -->
+                    <div x-cloak x-show="showModal" class="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
+                        <div class="bg-white p-6 rounded-lg shadow-lg w-96">
+                            <h2 class="text-xl font-semibold mb-4">Add New Responsible</h2>
+                            <form action="/m_egeneric/responsible/create/<%= data.id %>" method="POST" class="space-y-3">
+                                <input type="text" name="position" placeholder="Position" class="w-full p-2 border rounded" required>
+                                <input type="text" name="name" placeholder="Responsible" class="w-full p-2 border rounded" required>
+                                <div class="flex justify-end space-x-2">
+                                    <button type="button" @click="showModal = false" class="px-4 py-2 bg-red-600 text-white rounded">Cancel</button>
+                                    <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded">Save</button>
+                                </div>
+                            </form> 
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+
+
+            <div x-show="tab === 'form'" class="overflow-x-auto">
+
+                <!-- <h2 class="text-md mb-4 text-gray-500">Additional info </h2> -->
+                <div x-data="{ showModal: false }" class=" py-3">
+                    <!-- New Button -->
+                    <button @click="showModal = true" class="float-right mb-2 px-4 text-sm py-2 bg-green-600 text-white rounded shadow flex items-center">
+                        <i class="fa fa-plus mr-2"></i> New
+                    </button>
+                
+                    <!-- Small Table: Responsibles -->
+                    <div class=" bg-white my-2">
+                        
+                        <table class="w-full border">
+                            <thead>
+                                <tr class="bg-gray-200">
+                                    <th class="px-4 py-2">#</th>
+                                    <th class="px-4 py-2">Activity</th>
+                                    <!-- <th class="px-4 py-2">Responsible</th> -->
+                                </tr>
+                            </thead>
+                            <tbody>
+                                
+                                <% data.m_eGenericRegisterActivities.forEach((d,index) => { %>
+                                    <tr class="border-t">
+                                        <td class="px-4 py-2 whitespace-nowrap text-center"><%= index+1 %></td>
+                                        <td class="px-4 py-2 whitespace-nowrap text-center"><%= d.name %></td>
+                                     
+                                    </tr>
+                                    <% }) %>
+                            </tbody>
+                        </table>
+                    </div>
+                
+                    <!-- Modal -->
+                    <div x-cloak x-show="showModal" class="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
+                        <div class="bg-white p-6 rounded-lg shadow-lg w-96">
+                            <h2 class="text-xl font-semibold mb-4">Add activity </h2>
+                            <form action="/m_egeneric/activity/create/<%= data.id %>" method="POST" class="space-y-3">
+                                <input type="text" name="activity" placeholder="Activity..." class="w-full p-2 border rounded" required>
+                            
+                                <div class="flex justify-end space-x-2">
+                                    <button type="button" @click="showModal = false" class="px-4 py-2 bg-red-600 text-white rounded">Cancel</button>
+                                    <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded">Save</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+
+            <div x-show="tab === 'provider'" class="overflow-x-auto">
+
+                <!-- <h2 class="text-md mb-4 text-gray-500">Additional info </h2> -->
+                <div x-data="{ showModal: false }" class=" py-3">
+                    <!-- New Button -->
+                    <button @click="showModal = true" class="float-right mb-2 px-4 text-sm py-2 bg-green-600 text-white rounded shadow flex items-center">
+                        <i class="fa fa-plus mr-2"></i> New
+                    </button>
+                
+                    <!-- Small Table: Responsibles -->
+                    <div class=" bg-white my-2">
+                        
+                        <table class="w-full border">
+                            <thead>
+                                <tr class="bg-gray-200">
+                                    <th class="px-4 py-2">#</th>
+                                    <th class="px-4 py-2">Provider</th>
+                                    <!-- <th class="px-4 py-2">Responsible</th> -->
+                                </tr>
+                            </thead>
+                            <tbody>
+                                
+                                <% data.m_eGenericRegisterProviders.forEach((d,index) => { %>
+                                    <tr class="border-t">
+                                        <td class="px-4 py-2 whitespace-nowrap text-center"><%= index+1 %></td>
+                                        <td class="px-4 py-2 whitespace-nowrap text-center"><%= d.name %></td>
+                                     
+                                    </tr>
+                                <% }) %>
+                            </tbody>
+                        </table>
+                    </div>
+                
+                    <!-- Modal -->
+                    <div x-cloak x-show="showModal" class="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
+                        <div class="bg-white p-6 rounded-lg shadow-lg w-96">
+                            <h2 class="text-xl font-semibold mb-4">Add Provider </h2>
+                            <form action="/m_egeneric/provider/create/<%= data.id %>" method="POST" class="space-y-3">
+                                <input type="text" name="provider" placeholder="Provider..." class="w-full p-2 border rounded" required>
+                            
+                                <div class="flex justify-end space-x-2">
+                                    <button type="button" @click="showModal = false" class="px-4 py-2 bg-red-600 text-white rounded">Cancel</button>
+                                    <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded">Save</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+    
+            <div x-show="tab === 'report'" class="overflow-x-auto">
+                <h2 class="text-md mb-4 text-gray-500">General Report </h2>
+                <table class="w-full bg-white border rounded-lg shadow-md">
+                    <thead>
+                        <tr class="bg-gray-100">
+                    
+                            <th class="px-4 py-2 text-sm whitespace-nowrap text-left">Budget Spent</th>
+                            <th class="px-4 py-2 text-sm whitespace-nowrap text-left">Donation Estimation</th>
+                            <th class="px-4 py-2 text-sm whitespace-nowrap text-left">Currency</th>
+                            <th class="px-4 py-2 text-sm whitespace-nowrap text-left">Activity Budgetline</th>
+                            <th class="px-4 py-2 text-sm whitespace-nowrap text-left">Activities</th>
+                            <th class="px-4 py-2 text-sm whitespace-nowrap text-left">Providers</th>
+                            <th class="px-4 py-2 text-sm whitespace-nowrap text-left">Responsiblity</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        
+                        <tr class="border-t">
+                            
+                            <td class="px-4 py-2"><%= data.budget_spent %></td>
+                            <td class="px-4 py-2"><%= data.currency %></td>
+                            <td class="px-4 py-2"><%= data.donation_estimation %></td>
+                            <td class="px-4 py-2"><%= data.activity_budget_line %></td>
+                            
+                            <td class="px-4 py-2">
+                                <ul class="list-disc list-inside">
+                                    <% data.m_eGenericRegisterActivities.forEach((d, index) => { %>
+                                        <li class="whitespace-nowrap "><%= index + 1 %>. <%= d.name %></li>
+                                    <% }) %>
+                                </ul>
+                            </td>
+
+                            <td class="px-4 py-2">
+                                <ul class="list-disc list-inside">
+                                    <% data.m_eGenericRegisterProviders.forEach((d, index) => { %>
+                                        <li class="whitespace-nowrap "><%= index + 1 %>. <%= d.name %></li>
+                                    <% }) %>
+                                </ul>
+                            </td>
+                            
+                            
+                            <td class="px-4 py-2">
+                                <ul class="list-disc list-inside">
+                                    <% data.m_eGenericRegisterResponsibilities.forEach((responsible, index) => { %>
+                                        <li class="whitespace-nowrap">
+                                            <strong><%= index + 1 %>.</strong> 
+                                            <%= responsible.position %> - <%= responsible.responsible %>
+                                        </li>
+                                    <% }) %>
+                                </ul>
+                            </td>
+                            
+                        </tr>
+                          
+                    </tbody>
+                    
+                </table>
+            </div>
+
+            <div x-show="tab === 'part'" class="overflow-x-auto">
+
+                <!-- <h2 class="text-md mb-4 text-gray-500">Additional info </h2> -->
+                <div x-data="{ showModal: false }" class=" py-3">
+                    <!-- New Button -->
+                    <button @click="showModal = true" class="float-right mb-2 px-4 text-sm py-2 bg-green-600 text-white rounded shadow flex items-center">
+                        <i class="fa fa-plus mr-2"></i> New
+                    </button>
+                
+                    <!-- Small Table: Responsibles -->
+                    <div class=" bg-white my-2">
+                        
+                        <table class="w-full border-collapse border border-gray-200 mt-4">
+                            <thead>
+                                <tr class="bg-gray-100">
+                                    <th class="px-4 py-2 text-sm whitespace-nowrap text-left">#</th>
+                                    <th class="px-4 py-2 text-sm whitespace-nowrap text-left">Name</th>
+                                    <th class="px-4 py-2 text-sm whitespace-nowrap text-left">Institution</th>
+                                    <th class="px-4 py-2 text-sm whitespace-nowrap text-left">Position</th>
+                                    <th class="px-4 py-2 text-sm whitespace-nowrap text-left">Men</th>
+                                    <th class="px-4 py-2 text-sm whitespace-nowrap text-left">Women</th>
+                                    <th class="px-4 py-2 text-sm whitespace-nowrap text-left">Youth</th>
+                                    <th class="px-4 py-2 text-sm whitespace-nowrap text-left">Total</th>
+                                    
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% if (data.m_eGenericRegisterPartcipants.length > 0) { %>
+                                    <% data.m_eGenericRegisterPartcipants.forEach((item, index) => { %>
+                                        <tr class="border-t">
+                                            <td class="px-4 py-2"><%= index + 1 %></td>
+                                            <td class="px-4 py-2"><%= item.name %></td>
+                                            <td class="px-4 py-2"><%= item.institution %></td>
+                                            <td class="px-4 py-2"><%= item.position %></td>
+                                            <td class="px-4 py-2"><%= item.men %></td>
+                                            <td class="px-4 py-2"><%= item.women %></td>
+                                            <td class="px-4 py-2"><%= item.youth %></td>
+                                            <td class="px-4 py-2 font-bold"><%= item.totalNumber %></td>
+                                           
+                                        </tr>
+                                    <% }); %>
+                                <% } else { %>
+                                    <tr>
+                                        <td colspan="9" class="px-4 py-2 text-center text-gray-500">No records found</td>
+                                    </tr>
+                                <% } %>
+                            </tbody>
+                        </table>
+                        
+                    </div>
+                
+                    <!-- Modal -->
+                    <div x-cloak x-show="showModal" class="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
+                        <div class="bg-white p-6 rounded-lg shadow-lg w-96">
+                            <h2 class="text-xl font-semibold mb-4">Add Partcipants</h2>
+                            <form action="/m_egeneric/partcipants/create/<%= data.id %>" method="POST" class="grid grid-cols-2 gap-4">
+                                
+                                    <div>
+                                        <label class="text-sm">Name</label>
+                                        <input type="text" name="name" class="w-full px-4 py-2 border rounded" required>
+                                    </div>
+                                
+                                    <div>
+                                        <label class="text-sm">Institution</label>
+                                        <input type="text" name="institution" class="w-full px-4 py-2 border rounded" required>
+                                    </div>
+                                
+                                    <div>
+                                        <label class="text-sm">Position</label>
+                                        <input type="text" name="position" class="w-full px-4 py-2 border rounded" required>
+                                    </div>
+                                
+                                    <div>
+                                        <label class="text-sm">Men</label>
+                                        <input type="number" name="men" class="w-full px-4 py-2 border rounded" required>
+                                    </div>
+                                
+                                    <div>
+                                        <label class="text-sm">Women</label>
+                                        <input type="number" name="women" class="w-full px-4 py-2 border rounded" required>
+                                    </div>
+                                
+                                    <div>
+                                        <label class="text-sm">Youth</label>
+                                        <input type="number" name="youth" class="w-full px-4 py-2 border rounded" required>
+                                    </div>
+                                
+                                    <div>
+                                        <label class="text-sm">Total Number</label>
+                                        <input type="number" name="totalNumber" class="w-full px-4 py-2 border rounded" required>
+                                    </div>
+                                
+                                    <div class="col-span-2 flex gap-3">
+                                        <button type="button" @click="showModal = false" class="px-4 py-2 bg-red-600 text-white rounded">Cancel</button>
+                                        <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded">Save</button>
+                                    </div>
+                            
+                                
+                            </form> 
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+
