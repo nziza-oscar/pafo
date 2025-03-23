@@ -4,7 +4,9 @@ const Project = require("../models/Project");
 const fComponent = require("../models/f_Component"); 
 const fActivity  = require("../models/f_activity"); 
 const BudgetPlanning = require('../models/f_BudgetPlanning');
+const ProjectBudget = require("../models/ProjectBudget");
 
+const Sequelize = require("sequelize")
 
 
 exports.ProjectModal= async (req,res)=>{
@@ -24,6 +26,7 @@ exports.componentById = async (req, res, next) => {
                 }
             ]
         });
+
         if (!project) {
             return res.status(404).json({ message: "fComponent not found" });
         }
@@ -38,7 +41,11 @@ exports.projectById = async (req, res, next) => {
     const { projectId } = req.params;
 
     try {
-        const project = await Project.findByPk(projectId);
+        const project = await Project.findByPk(projectId,{
+            include:{
+                model:ProjectBudget
+            }
+        });
         if (!project) {
             return res.status(404).json({ message: "Project not found" });
         }
@@ -69,6 +76,59 @@ exports.activityById = async (req, res, next) => {
     }
 };
 
+
+exports.ProjectBudget = async (req, res) => {
+    try {
+        
+     
+        const startYear = new Date(req.project.startDate).getFullYear();
+        const endYear = new Date(req.project.endDate).getFullYear();
+        const years = Array.from({ length: endYear - startYear + 1 }, (_, i) => startYear + i);
+        // return res.json(req.project)
+        res.render("ProjectBudgetSettings", { title: "Project Budget Settings", data: req.project,dates: years,projectBudgets:req.project.projectBudgets });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
+
+
+exports.saveProjectBudget = async (req, res) => {
+    const year = req.body['year[]'];
+    const amount = req.body['amount[]'];
+
+    try {
+        if (!year || !Array.isArray(year)) {
+            const [budget, created] = await ProjectBudget.findOrCreate({
+                where: { project_id: req.project.id, year },
+                defaults: { amount }
+            });
+
+            if (!created) {
+                await budget.update({ amount });
+            }
+
+            return res.redirect('back');
+        }
+
+        for (let i = 0; i < year.length; i++) {
+            const [budget, created] = await ProjectBudget.findOrCreate({
+                where: { project_id: req.project.id, year: year[i] },
+                defaults: { amount: amount[i] }
+            });
+
+            if (!created) {
+                await budget.update({ amount: amount[i] });
+            }
+        }
+
+        return res.redirect('back');
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
+
 exports.ComponentList = async (req, res) => {
     try {
         const components = await fComponent.findAll({
@@ -84,24 +144,50 @@ exports.ComponentList = async (req, res) => {
                 }
             ]
         });
-
         
-
         const startYear = new Date(req.project.startDate).getFullYear();
         const endYear = new Date(req.project.endDate).getFullYear();
         const years = Array.from({ length: endYear - startYear + 1 }, (_, i) => startYear + i);
+        const projectBudgets = req.project.projectBudgets
+
+        const projectBudget = years.map((y)=>{
+            const foundBudget = projectBudgets.find((p)=>p.year == y);
+            if(foundBudget) return ({year: y,amount: foundBudget.amount})
+            return ({year: y,amount:0})
+        })
+
+        const componentBudgets = await BudgetPlanning.findAll({
+            attributes: [
+                'year',
+                [Sequelize.fn('SUM', Sequelize.col('amount_planned')), 'total_budget']
+            ],
+            where: { project_id: req.project.id },
+            group: [ 'year'],
+            raw: true
+        });
         
+        const budget_left = projectBudget.map(planned => {
+            const used = componentBudgets.find(used => used.year === planned.year)?.total_budget || 0;
+            return {
+                year: planned.year,
+                setted:used,
+                planned:planned.amount,
+                budget_left: parseFloat(planned.amount) - used
+            };
+        });
+        // return res.json(components)
 
         res.render("fBudgetComponentList", {
             title: req.project.name,
             project: req.project,
             dates: years,
             components: components,
-            projectId: req.project.id
+            projectId: req.project.id,
+            projectBudget:budget_left
         });
 
     } catch (error) {
-        console.error("Error fetching components:", error);
+        // console.error("Error fetching components:", error);
         res.status(500).json({ message: "Internal server error" });
     }
 };
@@ -128,17 +214,39 @@ exports.getActivitiesByComponent = async (req, res) => {
         { length: new Date(project.endDate).getFullYear() - new Date(project.startDate).getFullYear() + 1 },
         (_, i) => new Date(project.startDate).getFullYear() + i
     );
-     const component = req.fComponent.BudgetPlannings
-     
-    // const componentBudget = years.map((d)=>({[d]:component.BudgetPlannings.find((p)=>p.year == d).amount_planned}))
+     const component = req.fComponent.budget_plannings
 
-    //  const componentBudgetx = years.map((d)=>{
-    //     //    const budget = proje ct.find((b)=>)
-    //     return d
-    //  })
+     const componentBudget = years.map((y)=>{
+        const foundBudget = component.find((p)=>p.year == y);
+        if(foundBudget) return ({year: y,amount: foundBudget.amount_planned,id:foundBudget.id})
+        return ({year: y,amount:0,id:0})
+    })
 
     
+    const activitiesBudgets = await BudgetPlanning.findAll({
+        attributes: [
+            'year',
+            [Sequelize.fn('SUM', Sequelize.col('amount_planned')), 'total_budget']
+        ],
+        where: { account_type: 'ACTIVITIES', component_id:req.fComponent.id },
+        group: [ 'year'],
+        raw: true
+    });
+  
+    const budget_left = componentBudget.map(planned => {
+        const used = activitiesBudgets?.find(used => used.year === planned.year)?.total_budget || 0;
+        return {
+            year: planned.year,
+            setted:used,
+            id:planned.id || 0,
+            planned:planned.amount,
+            budget_left: parseFloat(planned.amount) - used
+        };
+    });
 
+
+    // return res.json(budget_left)
+    // return res.json(activitiesBudgets)
     // return res.json(componentBudget)
         
         res.render("fBudgetActivities",{title:"Activity",
@@ -146,11 +254,34 @@ exports.getActivitiesByComponent = async (req, res) => {
              data:activities,
              componentId:componentId,
              projectId:project.id,
-             componentBudget:component
+             componentBudget:component,
+             budget_left:budget_left
         });
 
     } catch (error) {
         res.status(500).json({ error: error.message });
+    }
+};
+
+const getBudget = async (activityId) => {
+    try {
+        let subactivityBudgets = await BudgetPlanning.findAll({
+            include: [{
+                model: fActivity,
+               
+                where: { parent_id: activityId } 
+            }],
+            attributes: [
+                "year",
+                [Sequelize.fn("SUM", Sequelize.col("amount_planned")), "total_budget"]
+            ],
+            group: ["year"]
+        });
+
+        return subactivityBudgets.map(budget => budget.toJSON()); // Convert to plain JSON
+    } catch (error) {
+        console.log(error.message);
+        return []; // Return an empty array in case of an error
     }
 };
 
@@ -161,6 +292,7 @@ exports.SubActivitiesByActivity = async (req, res) => {
             where: { parent_id: activityId },
             include:[{
                 model:BudgetPlanning
+               
             },
             {
                 
@@ -178,17 +310,80 @@ exports.SubActivitiesByActivity = async (req, res) => {
                 }
         ]
         });
+        
+      
+
+        
+
+        // return res.json(subactivityBudgets)
+
+
+
+
+        
+
+
         const project = req.project
         const years = Array.from(
            { length: new Date(project.endDate).getFullYear() - new Date(project.startDate).getFullYear() + 1 },
            (_, i) => new Date(project.startDate).getFullYear() + i
        );
 
-    //    return res.json(req.activity);
-     const activityBudget = req.activity.BudgetPlannings
+        const activity = req.activity.budget_plannings
 
-        res.render("fBudgetSubActivities", { title: "Sub Activities Budget Planning",
-            activityBudget:activityBudget, dates:years , data: subActivities, activityId:activityId ,projectId:project.id});
+        const activityBudget = years.map((y)=>{
+            const foundBudget = activity.find((p)=>p.year == y);
+            if(foundBudget) return ({year: y,amount: foundBudget.amount_planned,id:foundBudget.id})
+            return ({year: y,amount:0,id:0})
+        })
+
+    
+        const subActivitiesBudgets = await getBudget(activityId);
+       
+    // return res.json(subactivityBudgets);
+
+    // const budget_left = activityBudget.map(planned => {
+      
+    //     const subactiviy = subActivitiesBudgets.find(used => used.year === planned.year)
+    //     return {
+    //         subactiviy:subactiviy,
+    //         year: planned.year,
+    //         id:planned.id || 0,
+    //         planned:planned.amount,
+    //         budget_left: parseFloat(planned.amount) - parseFloat(subactiviy?.total_budget)
+    //     };
+
+    // });
+
+
+//  const budget = subActivitiesBudgets.map((data)=>{
+//     const fbudget = activityBudget.find((ac)=>ac.year == data.year)
+//     if(fbudget) return ({activity_budget: fbudget.amount,total_budget:data.total_budget})
+//     return data
+//  })
+const budget = activityBudget.map((ac) => {
+    const fbudget = subActivitiesBudgets.find((data) => data.year === ac.year);
+    return {
+        year: ac.year,
+        activity_budget: ac.amount,
+        total_budget: fbudget ? fbudget.total_budget : 0,
+        budget_left: parseFloat(ac.amount) - (fbudget ? fbudget.total_budget : 0),
+    };
+});
+
+   
+    // return res.json(budget)
+    // return res.json(activity)
+
+        res.render("fBudgetSubActivities", { 
+            title: "Sub Activities Budget Planning",
+            activityBudget:budget, 
+            dates:years, 
+            data: subActivities, 
+            activityId:activityId ,
+            projectId:project.id
+        });
+
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
@@ -196,6 +391,7 @@ exports.SubActivitiesByActivity = async (req, res) => {
 
 
 exports.createBudget = async (req, res) => {
+    
     try {
         const { component_id, activity_id, amount_planned, amount_used, comment, year } = req.body;
         const budget = await BudgetPlanning.create({ component_id, activity_id, amount_planned, amount_used, comment, year });
@@ -208,24 +404,35 @@ exports.createBudget = async (req, res) => {
 exports.SaveBudget = async (req, res) => {
     const year = req.body['year[]'];
     const amount_planned = req.body['amount[]'];
-    const {component_id, activity_id} = req.body
     
+    const {component_id, activity_id,account_type} = req.body
+       
+    let componentId = component_id
+    if(!componentId){
+        componentId = req.params.componentId
+    }
+   
+    // return res.json(req.body)
     try {
         if (!year || !Array.isArray(year)) {
             await BudgetPlanning.create({
                 amount_planned:amount_planned,
-                component_id:component_id,
+                component_id:componentId,
                 activity_id:activity_id,
-                year:year
+                year:year,
+                account_type:account_type,
+                project_id:req.project?.id
             }); 
            return res.redirect('back');
         }
    
          await BudgetPlanning.bulkCreate(year.map((y,index) => ({
             amount_planned:amount_planned[index],
-            component_id:component_id,
+            component_id:componentId,
             activity_id:activity_id,
-            year:y
+            year:y,
+            account_type:account_type,
+            project_id:req.project?.id 
         })));
 
         res.redirect('back');
@@ -234,6 +441,55 @@ exports.SaveBudget = async (req, res) => {
         return res.status(500).json({ message: "Internal Server Error" });
     }
 };
+
+// exports.SaveBudget = async (req, res) => {
+//     let years = req.body['year[]'];
+//     let amounts = req.body['amount[]'];
+//     const { component_id, activity_id, account_type } = req.body;
+
+//     let componentId = component_id || req.params.componentId;
+
+//     try {
+//         if (!years) {
+//             return res.status(400).json({ message: "Year is required" });
+//         }
+
+//         // Ensure values are always arrays for consistency
+//         if (!Array.isArray(years)) {
+//             years = [years];
+//             amounts = [amounts];
+//         }
+
+//         for (let i = 0; i < years.length; i++) {
+//             const existingBudget = await BudgetPlanning.findOne({
+//                 where: {
+//                     year: years[i],
+//                     account_type: account_type,
+//                     activity_id: activity_id,
+//                     component_id: componentId || null
+//                 }
+//             });
+
+//             if (existingBudget) {
+//                 await existingBudget.update({ amount_planned: amounts[i] });
+//             } else {
+//                 await BudgetPlanning.create({
+//                     amount_planned: amounts[i],
+//                     component_id: componentId,
+//                     activity_id: activity_id,
+//                     year: years[i],
+//                     account_type: account_type,
+//                     project_id: req.project?.id
+//                 });
+//             }
+//         }
+
+//         res.redirect('back');
+//     } catch (error) {
+//         console.error("Error saving budget:", error);
+//         return res.status(500).json({ message: "Internal Server Error" });
+//     }
+// };
 
 exports.saveActivitiesByComponent = async (req, res) => {
 

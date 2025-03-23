@@ -14,7 +14,7 @@
       [x-cloak]{
         display: none !important;
       }
-        body {
+      body {
             font-family: "Poppins", serif;
             font-weight: 400;
             font-style: normal;
@@ -23,7 +23,6 @@
 
   </head>
   <body>
-    
 
     <div class="grid grid-cols-6" >
         <%- include("partials/sidebar") %>
@@ -49,67 +48,56 @@
                     </div>
 
                     
-
-                    
                     <div x-cloak x-show="isModalOpen" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center">
-                        <div class="bg-white p-6 rounded-lg shadow-lg w-1/2 h-screen overflow-x-auto">
-                            <div x-data="{ components: <%= JSON.stringify(projectBudget)%> , maxm:0 }">
+                        <div class="bg-white p-6 rounded-lg shadow-lg w-1/2">
+                            <div x-data="{ components: <%= JSON.stringify(projectBudget)%> , othercomponents:<%= JSON.stringify(projectBudget)%> , maxm:0,availableYears:<%= JSON.stringify(dates) %> }">
                                 
                                 <div class="flex justify-between items-center">
-                                    <h2 class="text-xl font-bold mb-4">Component Budget Planning</h2>
-                                    <!-- <div>
-                                        <button @click="components.push({year': 2024,'budget_left':0})" class="bg-blue-500 text-white px-2 py-1 rounded cursor-pointer"><i class="fa fa-plus"></i></button>
-                                    </div> -->
+                                    <h2 class="text-xl font-bold mb-4">Budget Planning</h2>
+                                    <div>
+                                        <button @click="components.push({'budget_left':0})" class="bg-blue-500 text-white px-2 py-1 rounded cursor-pointer"><i class="fa fa-plus"></i></button>
+                                    </div>
                                 </div>
                                 <form method="post" action="/finance-budget/components/<%= projectId %>/list" x-data="yearSelector">
-                                      <input type="hidden" x-model="componentId" name="component_id"/>
-                                      <input type="hidden" value="COMPONENT" name="account_type"/>
-
-                                      <template x-for="(component, index) in components">
-                                        <template x-if="component.budget_left > 0">
-                                            <div class="my-2">
-                                                <div class="flex gap-2">
-                                                    <div class="flex gap-2">
-                                                        <div class="w-20">
-                                                            <label class="block text-sm font-medium text-gray-700">Year:</label>
-                                                            <input type="number" :value="component.year" name="year[]" readonly 
-                                                                class="bg-gray-100 text-gray-600 mt-1 p-2 border border-gray-300 rounded w-full">
-                                                        </div>
-                                                        <div class="max-w-sm">
-                                                            <label class="block text-sm font-medium text-gray-700">Remaining Budget <span x-text="component.year"></span>:</label>
-                                                            <input type="number" :value="component.budget_left" readonly  
-                                                                class="bg-gray-100 text-gray-600 mt-1 p-2 border border-gray-300 rounded w-full">
-                                                        </div>
-                                                    </div>
-                                    
-                                                    <div class="flex-1">
-                                                        <label class="block text-sm font-medium text-gray-700">Amount:</label>
-                                                        <input type="number" name="amount[]" x-model="component.amount"
-                                                            :max="component.budget_left || 0"
-                                                            class="mt-1 p-2 border border-gray-300 rounded w-full"
-                                                            required>
-                                                    </div>
-                                    
-                                                    <button @click="components.splice(index, 1)" type="button" 
-                                                        class="cursor-pointer bg-red-500 text-white px-3 py-2 rounded self-center">
-                                                        <i class="fa fa-trash"></i>
-                                                    </button>
-                                                </div>
-                                    
+                                    <input type="hidden" x-model="componentId" name="component_id"/>
+                                    <template x-for="(component, index) in components">
+                                        <div class="flex gap-2" >
+                                            <div class="mb-4 flex-1">
+                                                <label class="block text-sm font-medium text-gray-700">Year:</label>
+                                                <select type="text" name="year[]" 
+                                                class="choose-year mt-1 p-2 border border-gray-300 rounded w-full" required
+                                                x-model="selectedYears[index]"
+                                                @change="updateDisabledOptions(selectedYears[index], index); updateMax(component, index)">
+                                                <option value="">Choose Year</option>
+                                                <% dates.forEach((y)=>{ %> 
+                                                    <option :value="<%= y %>" x-bind:disabled="isDisabled('<%= y %>', index)"><%= y %></option>
+                                                <% }) %>
+                                            </select>
+                                            </div>
+                                
+                                            <div class="mb-4 flex-1">
+                                                <label class="block text-sm font-medium text-gray-700">Amount:</label>
+                                                <input type="number" name="amount[]" x-model="component.amount"
+                                                    :max="component.budget_left" 
+                                                    :placeholder="component.budget_left" 
+                                                    class="mt-1 p-2 border border-gray-300 rounded w-full">
                                                 <small class="text-red-500 font-bold text-xs" x-show="component.amount > component.budget_left">
-                                                    *Amount should not exceed budget of <span x-text="component.budget_left"></span>
+                                                    *Amount should not exceed <span x-text="component.budget_left"></span>
                                                 </small>
                                             </div>
-                                        </template>
+                                
+                                            <button @click="components.splice(index, 1)" type="button" 
+                                                class="cursor-pointer bg-red-500 text-white px-3 py-2 rounded self-center">
+                                                <i class="fa fa-trash"></i>
+                                            </button>
+                                        </div>
                                     </template>
-                                    
                                 
                                     <div class="flex justify-end">
                                         <button type="button" @click="isModalOpen = false" class="bg-gray-500 text-white px-4 py-2 rounded mr-2 cursor-pointer">Cancel</button>
                                         <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded cursor-pointer">Save</button>
                                     </div>
                                 </form>
-                                
                             </div>
                             
                         </div>
@@ -137,62 +125,83 @@
                             <th class="border px-4 py-2">Action</th>
                         </tr>
                     </thead>
-                    
                     <tbody>
-                        <% let x=[]; %>
-
-                        <% components.forEach((component, index) => {%>
+                        <% let x=[]; components.forEach((component, index) => { %>
                             <tr class="text-left">
                                 <td class="border px-4 py-2"><%= component.id %></td>
                                 <td class="border px-4 py-2"><%= component.name %></td>
                                 <% let used=0; let total=0; dates.forEach((y, i) => { %>
                                     <td class="border px-4 py-2">
-                                        <% let f = component.budget_plannings?.find((e) => e.year == y); %>
+                                        <% let f = component.BudgetPlannings?.find((e) => e.year == y); %>
                                         <%= f ? f.amount_planned : 0 %>
                                         
                                         <% total += f ? f.amount_planned : 0; %>
                                         <% used += f ? f.amount_used : 0; %>
                                         
                                     </td>
-                                <% }) %>   
+                                <% }) %>                                
                                 <td class="border px-4 py-2"><%= total %></td>
+                                
                                 <td class="border px-4 py-2">
-                                    <button 
+                                    <div class="flex gap-2">
+                                        <% if(used == 0){ %>
+                                        <button 
                                         @click="isModalOpen = true;componentId=<%= component.id %>;" 
-                                            class="bg-blue-500 text-white px-4 py-1 rounded cursor-pointer whitespace-nowrap">
-                                           Add Budget 
+                                            class="bg-blue-500 text-white px-4 py-1 rounded cursor-pointer">
+                                            <% if (component.BudgetPlannings.length == 0){ %>
+                                                Add Budget
+                                            <% } else{ %>
+                                                Update Budget
+                                            <% } %> 
                                         
                                         </button>
-
-                                    <% if (component.f_activities.length != 0){ %>
-                                        <a href="/finance-budget/components/<%= component.id %>/activities" 
-                                        class="bg-green-500 text-white px-4 py-1 rounded whitespace-nowrap"> Activities Budget</a>
-                                    <% } %>
+                                        <% } %>
+                                            
+                                
+                                            <% if (component.f_activities.length != 0){ %>
+                                                <a href="/finance-budget/components/<%= component.id %>/activities" 
+                                                class="bg-green-500 text-white px-4 py-1 rounded"> Activities Budget</a>
+                                            <% } %>
+                                    </div>
                                 </td>
-                                
-                                
                             </tr>
-                        <% }) %> 
+                        <% }) %>
                     </tbody>
+                    <tfoot>
+                        <tr class="bg-gray-200">
+                            <th class="border px-4 py-2" colspan="2">Total</th>
+                            <% let allTotal = 0; %>
+                            <% dates.forEach((y) => { %>
+                                <% 
+                                    let yearTotal = components.reduce((sum, component) => {
+                                        let budget = component.BudgetPlannings.find(b => b.year == y);
+                                        return sum + (budget ? budget.amount_planned : 0);
+                                    }, 0);
+                                    allTotal += yearTotal;
+                                %>
+                                <th class="border px-4 py-2"><%= yearTotal %></th>
+                            <% }) %>
 
+
+                            <th class="border px-4 py-2">
+                                <%= allTotal  %>
+                            </th>
+                        </tr>
+                    </tfoot>
+                    
                 </table>
-
-                
-                
-              
-                
             </div>
             
         </div>
     </div>
-    
+
+   
+
     <script>
         document.addEventListener('alpine:init', () => {
             Alpine.data('yearSelector', () => ({
                 selectedYears: [], 
-                maximums: {}, 
-                
-    
+                // maximums: {}, 
                 isDisabled(year, currentIndex) {
                     return this.selectedYears.includes(year.toString()) && this.selectedYears[currentIndex] !== year.toString();
                 },
@@ -202,46 +211,29 @@
                     this.selectedYears = [...this.selectedYears];
                 },
     
-                updateMaximum(year, index) {
-                    let selectedComponent = this.components.find(c => c.year == year);
-                    console.log(selectedComponent.amount_planned)
-                    this.maximums[index] = selectedComponent ? selectedComponent.amount_planned : 0;
+                updateMax(component, index) {
+                    // console.log(this)
+                    // console.log(component,index)
+                    const selectedYear = component.year;
+                    const budget = this.othercomponents.find(b => b.year == selectedYear);  
+                    const x = budget ? budget.budget_left : 0;
+                    component.budget_left = x
+
+                    console.log(component,x)
+                    
                 }
             }));
         });
     </script>
     
-   
+
     <script>
-
-// function handleYearChange(selectedValue) {
-//     const selects = document.querySelectorAll('.choose-year');
-//     const selectedYears = new Set();
-
-//     // Collect selected values
-//     selects.forEach(select => {
-//         if (select.value !== "Choose Year") {
-//             selectedYears.add(select.value);
-//         }
-//     });
-
-//     // Disable selected years in other dropdowns
-//     selects.forEach(select => {
-//         select.querySelectorAll('option').forEach(option => {
-//             if (option.value !== "Choose Year") {
-                
-//                 option.disabled = selectedYears.has(option.value) && option.value !== select.value;
-//             }
-//         });
-//     });
-// }
-
-
+      
 
 
         document.getElementById("search").addEventListener("input", function () {
             let filter = this.value.toLowerCase();
-            let rows = document.querySelectorAll("#projectTable tr");
+            let rows = document.querySelectorAll("#componentTable tr");
     
             rows.forEach(row => {
                 let projectName = row.children[1].textContent.toLowerCase();

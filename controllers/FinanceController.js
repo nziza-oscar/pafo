@@ -1,5 +1,6 @@
 
 const Project = require("../models/Project");
+const ProjectBudget = require("../models/ProjectBudget");
 
 const fComponent = require("../models/f_Component"); 
 const fActivity  = require("../models/f_activity"); 
@@ -29,7 +30,13 @@ exports.projectById = async (req, res, next) => {
     const { projectId } = req.params;
 
     try {
-        const project = await Project.findByPk(projectId);
+        const project = await Project.findByPk(projectId,
+            {
+                include:{
+                    model:ProjectBudget
+                }
+            }
+        );
         if (!project) {
             return res.status(404).json({ message: "Project not found" });
         }
@@ -113,6 +120,9 @@ exports.SubActivitiesByActivity = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
+
+
+
 
 exports.fGeneralReport = async(req,res)=>{
      const { projectId } = req.params
@@ -226,7 +236,7 @@ exports.SaveComponents = async (req, res) => {
     
     try {
         if (!components || !Array.isArray(components)) {
-            const savedComponents = await fComponent.create({
+             await fComponent.create({
                 project_id: parseInt(projectId),
                 name: components,
                 createdAt: new Date()
@@ -235,10 +245,8 @@ exports.SaveComponents = async (req, res) => {
     
            return res.redirect('back');
         }
-     
-
    
-        const savedComponents = await fComponent.bulkCreate(components.map(component => ({
+        await fComponent.bulkCreate(components.map(component => ({
             project_id: parseInt(projectId),
             name: component,
             createdAt: new Date()
@@ -258,7 +266,7 @@ exports.saveActivitiesByComponent = async (req, res) => {
     
     try {
         if (!activities || !Array.isArray(activities)) {
-            const savedComponents = await fActivity.create({
+             await fActivity.create({
                 component_id:componentId,
                 parent_id:null,
                 name:activities
@@ -270,7 +278,7 @@ exports.saveActivitiesByComponent = async (req, res) => {
      
 
    
-        const savedComponents = await fActivity.bulkCreate(activities.map(activity => ({
+        await fActivity.bulkCreate(activities.map(activity => ({
             component_id:componentId,
             parent_id:null,
             name:activity

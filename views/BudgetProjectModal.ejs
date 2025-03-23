@@ -54,8 +54,11 @@
                                 <td class="border px-4 py-2"><%= project.startDate %></td>
                                 <td class="border px-4 py-2"><%= project.endDate %></td>
                                 <td class="border px-4 py-2">
-                                    <a href="/finance-budget/components/<%= project.id %>/list" 
-                                         class="bg-blue-500 text-white px-4 py-1 rounded">Budget</a>
+                                    <div class="flex gap-2">
+                                        <a href="/finance-budget/components/<%= project.id %>/list" class="bg-green-500 whitespace-nowrap text-white px-4 py-1 rounded"><i class="fa fa-book"></i> Report</a>
+                                        <a href="/finance-budget/project/<%= project.id %>/settings" class="bg-indigo-500 whitespace-nowrap text-white px-4 py-1 rounded">Budget Setting</a>
+                                        <a href="/finance-budget/components/<%= project.id %>/list" class="bg-amber-500 text-white px-4 py-1 rounded">Components</a>
+                                    </div>
                                 </td>
                             </tr>
                         <% }) %>

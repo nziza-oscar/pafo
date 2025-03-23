@@ -25,7 +25,6 @@ const f_Activity = sequelize.define(
   { tableName: "f_activities", timestamps: false }
 );
 
-// Define self-referencing associations with unique aliases
 f_Activity.hasMany(f_Activity, { as: "SubActivities", foreignKey: "parent_id", onDelete: "CASCADE", onUpdate: "CASCADE" });
 f_Activity.belongsTo(f_Activity, { as: "Parent", foreignKey: "parent_id", onDelete: "CASCADE", onUpdate: "CASCADE" });
 

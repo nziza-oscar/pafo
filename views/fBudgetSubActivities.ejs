@@ -44,56 +44,60 @@
                            
                         </div>
                     </div>
-                    
+
+                     
                    
-                    <div x-cloak x-show="isModalOpen" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center">
-                        <div class="bg-white p-6 rounded-lg shadow-lg w-1/2">
+                    <div x-cloak x-show="isModalOpen" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center overflow-x-auto">
+                        <div class="bg-white p-6 rounded-lg shadow-lg w-1/2 max-h-screen overflow-x-auto">
                             <div x-data="{ components: <%= JSON.stringify(activityBudget) %> }">
                                 <div class="flex justify-between items-center">
-                                    <h2 class="text-xl font-bold mb-4">Budget Planning</h2>
+                                    <h2 class="text-xl font-bold mb-4">Activity Budget Planning </h2>
                                     <div>
-                                        <button @click="components.push({ id: Date.now() })" class="bg-blue-500 text-white px-2 py-1 rounded cursor-pointer"><i class="fa fa-plus"></i></button>
+                                        <!-- <button @click="components.push({ id: Date.now() })" class="bg-blue-500 text-white px-2 py-1 rounded cursor-pointer"><i class="fa fa-plus"></i></button> -->
                                     </div>
                                 </div>
                                 <form method="post" action="" x-data="yearSelector">
                                     <input type="hidden" x-model="activityId" :value="activityId" name="activity_id"/>
-                                    <template x-for="(component, index) in components" :key="component.id">
-                                       <div class="flex gap-2">
-                                        <div class="mb-4 flex-1">
-                                            <label for="componentName" class="block text-sm font-medium text-gray-700">Choose Year: </label>
-                                            <div class="flex gap-2 items-center">
-                                                
-                                                <select type="text" name="year[]" 
-                                                class="choose-year mt-1 p-2 border border-gray-300 rounded w-full" required
-                                                x-model="selectedYears[index]"
-                                                @change="updateDisabledOptions(selectedYears[index], index); updateMaximum(selectedYears[index], index)">
-                                                <option value="">Choose Year</option>
-                                                <% dates.forEach((y)=>{ %> 
-                                                    <option :value="<%= y %>" x-bind:disabled="isDisabled('<%= y %>', index)"><%= y %></option>
-                                                <% }) %>
-                                            </select>
-                                            
-                                            
-                                        
-                                            
-                                            </div>
-                                        </div>
+                                    <input type="hidden" value="SUBACTIVITY" name="account_type"/>
 
-                                        <div class="mb-4 flex-1">
-                                            <label for="componentName" class="block text-sm font-medium text-gray-700">Amount: </label>
-                                            <div class="flex gap-2 items-center">
-                                                <input type="number" name="amount[]" 
-                                                :max="maximums[index] || 0"
-                                                class="mt-1 p-2 border border-gray-300 rounded w-full" required>
-                                            
+                                    <template x-for="(component, index) in components">
+                                        <template x-if="component.budget_left > 0">
+                                            <div class="my-2">
+                                                <div class="flex gap-2">
+                                                    <div class="flex gap-2">
+                                                        <div class="w-20">
+                                                            <label class="block text-sm font-medium text-gray-700">Year:</label>
+                                                            <input type="number" :value="component.year" name="year[]" readonly 
+                                                                class="bg-gray-100 text-gray-600 mt-1 p-2 border border-gray-300 rounded w-full">
+                                                        </div>
+                                                        <div class="max-w-sm">
+                                                            <label class="block text-sm font-medium text-gray-700">Remaining Budget <span x-text="component.year"></span>:</label>
+                                                            <input type="number" :value="component.budget_left" readonly  
+                                                                class="bg-gray-100 text-gray-600 mt-1 p-2 border border-gray-300 rounded w-full">
+                                                        </div>
+                                                    </div>
+                                    
+                                                    <div class="flex-1">
+                                                        <label class="block text-sm font-medium text-gray-700">Amount:</label>
+                                                        <input type="number" name="amount[]" x-model="component.amount"
+                                                            :max="component.budget_left || 0"
+                                                            class="mt-1 p-2 border border-gray-300 rounded w-full"
+                                                            required>
+                                                    </div>
+                                    
+                                                    <button @click="components.splice(index, 1)" type="button" 
+                                                        class="cursor-pointer bg-red-500 text-white px-3 py-2 rounded self-center">
+                                                        <i class="fa fa-trash"></i>
+                                                    </button>
+                                                </div>
+                                    
+                                                <small class="text-red-500 font-bold text-xs" x-show="component.amount > component.budget_left">
+                                                    *Amount should not exceed budget of <span x-text="component.budget_left"></span>
+                                                </small>
                                             </div>
-                                        </div>
-
-                                        <button @click="components.splice(index, 1)" type="button" class="cursor-pointer bg-red-500 text-white px-3 py-2 rounded self-center">
-                                            <i class="fa fa-trash"></i>
-                                        </button>
-                                       </div>
+                                        </template>
                                     </template>
+                                    
                             
                                     <div class="flex justify-end">
                                         <button type="button" @click="isModalOpen = false" 
@@ -115,101 +119,142 @@
                             <% dates.forEach((y)=>{ %> 
                                 <th class="border px-4 py-2"><%= y %></th>
                             <% }) %>
+                            <th class="border px-4 py-2">Total</th>
                             <th class="border px-4 py-2">Action</th>
                         </tr>
                     </thead>
                     <tbody>
-                        
-                        <% data.forEach((subActivity, index) => { %>
+                        <% let totals = 0;  data.forEach((activity, index) => { %>
                             <tr >
-                                <td class="border px-4 py-2"><%= index + 1 %></td>
-                                <td class="border px-4 py-2"><%= subActivity.name %></td>
-                                <% let used=0; dates.forEach((y, i) => { %>
+                                <td class="border px-4 py-2"><%= index+1 %></td>
+                                <td class="border px-4 py-2"><%= activity.name %></td>
+                                <% let used=0; let total=0; dates.forEach((y, i) => { %>
                                     <td class="border px-4 py-2">
-                                        <%= subActivity.BudgetPlannings[i] ? subActivity.BudgetPlannings[i].amount_planned : 0 %>
-                                        <% used +=  subActivity.BudgetPlannings[i] ? subActivity.BudgetPlannings[i].amount_used : 0 %>
+                                        <% let f = activity.budget_plannings?.find((e) => e.year == y); %>
+                                        <%= f ? f.amount_planned : 0 %>
+                                        
+                                        <% total += f ? f.amount_planned : 0; %>
+                                        <% used += f ? f.amount_used : 0; %>
+                                        
                                     </td>
                                 <% }) %>
-
+                                <% totals+=Number(total) %>
+                                <td class="border px-4 py-2"><%= total %></td>
                                 <td class="border px-4 py-2">
+                                  <div class="flex gap-2">
                                     <button 
-                                        @click="isModalOpen = true;activityId=<%= subActivity.id %>;" 
-                                            class="bg-blue-500 text-white px-4 py-1 rounded cursor-pointer">
-                                            <% if (subActivity.BudgetPlannings.length == 0){ %>
-                                                Add Budget 
-                                            <% } else{ %>
-                                                Update Budget
-                                            <% } %> 
-                                        
-                                        </button>
-                                        <% if (subActivity.Subactivities.length != 0){ %>
-                                            <a href="/finance-budget/project/<%= projectId %>/activity/<%= subActivity.id %>/subactivity" 
-                                                class="bg-green-500 text-white px-4 py-1 rounded">Subactivities Budget</button>
-                                        <% } %>
-                                        <!-- finance-budget/project/12/activity/42/subactivity -->
+                                    @click="isModalOpen = true;activityId=<%= activity.id %>;" 
+                                        class="bg-blue-500 text-white px-4 py-1 rounded cursor-pointer whitespace-nowrap text-sm">
+                                        <% if (activity.budget_plannings.length == 0){ %>
+                                            Add Budget
+                                        <% } else{ %>
+                                            Update Budget
+                                        <% } %> 
+                                    
+                                    </button>
+                                <% if (activity.Subactivities.length != 0){ %>
+                                    <a href="/finance-budget/project/<%= projectId %>/activity/<%= activity.id %>/subactivity" 
+                                    class="bg-green-500 text-white px-4 py-1 rounded whitespace-nowrap text-sm">Sub-Activities</a>
+                                <% } %>
+                                  </div>
                                 </td>
-                                <!-- <td class="border px-4 py-2"><%= subActivity.description %></td> -->
                             </tr>
                         <% }) %>
-                    </tbody>
-                    
-                                
+
                         
-                
-                
+
+
+                    </tbody>
                     <tfoot>
-                        <tr class="bg-gray-200">
-                            <th class="border px-4 py-2" colspan="2">Total</th>
-                            <% dates.forEach((y, i) => { %>
+                        <tr>
+                            <th class="border px-4 py-2" colspan="<%= dates.length + 2 %>">Total</th>
+                            
                                 <th class="border px-4 py-2">
-                                    <%= data.reduce((sum, activity) => sum + (activity.BudgetPlannings[i] ? activity.BudgetPlannings[i].amount_planned : 0), 0) %>
+                                    <%= totals %>
                                 </th>
-                            <% }) %>
-                            <th class="border px-4 py-2"></th>
+
+
+                    
                         </tr>
                     </tfoot>
-
                 </table>
-            </div>
-            
+
+          
+
+                
+                
+              
+                
         </div>
+        
     </div>
+</div>
 
-    <script>
-        document.addEventListener('alpine:init', () => {
-            Alpine.data('yearSelector', () => ({
-                selectedYears: [], 
-                maximums: {}, 
-                isDisabled(year, currentIndex) {
-                    return this.selectedYears.includes(year.toString()) && this.selectedYears[currentIndex] !== year.toString();
-                },
-    
-                updateDisabledOptions(year, index) {
-                    // console.log({year, index})
-                    this.selectedYears = [...this.selectedYears];
-                },
-    
-                updateMaximum(year, index) {
-                    let selectedComponent = this.components.find(c => c.year == year);
-                    console.log(selectedComponent.amount_planned)
-                    this.maximums[index] = selectedComponent ? selectedComponent.amount_planned : 0;
-                }
-            }));
-        });
-    </script>
-    
-   
+<script>
+    document.addEventListener('alpine:init', () => {
+        Alpine.data('yearSelector', () => ({
+            selectedYears: [], 
+            maximums: {}, 
+            
 
-    <script>
-        document.getElementById("search").addEventListener("input", function () {
-            let filter = this.value.toLowerCase();
-            let rows = document.querySelectorAll("#projectTable tr");
-    
-            rows.forEach(row => {
-                let projectName = row.children[1].textContent.toLowerCase();
-                row.style.display = projectName.includes(filter) ? "" : "none";
-            });
+            isDisabled(year, currentIndex) {
+                return this.selectedYears.includes(year.toString()) && this.selectedYears[currentIndex] !== year.toString();
+            },
+
+            updateDisabledOptions(year, index) {
+                // console.log({year, index})
+                this.selectedYears = [...this.selectedYears];
+            },
+
+            updateMaximum(year, index) {
+                let selectedComponent = this.components.find(c => c.year == year);
+                console.log(selectedComponent.amount_planned)
+                this.maximums[index] = selectedComponent ? selectedComponent.amount_planned : 0;
+            }
+        }));
+    });
+</script>
+
+
+<script>
+
+// function handleYearChange(selectedValue) {
+//     const selects = document.querySelectorAll('.choose-year');
+//     const selectedYears = new Set();
+
+//     // Collect selected values
+//     selects.forEach(select => {
+//         if (select.value !== "Choose Year") {
+//             selectedYears.add(select.value);
+//         }
+//     });
+
+//     // Disable selected years in other dropdowns
+//     selects.forEach(select => {
+//         select.querySelectorAll('option').forEach(option => {
+//             if (option.value !== "Choose Year") {
+            
+//                 option.disabled = selectedYears.has(option.value) && option.value !== select.value;
+//             }
+//         });
+//     });
+// }
+
+
+
+
+    document.getElementById("search").addEventListener("input", function () {
+        let filter = this.value.toLowerCase();
+        let rows = document.querySelectorAll("#projectTable tr");
+
+        rows.forEach(row => {
+            let projectName = row.children[1].textContent.toLowerCase();
+            row.style.display = projectName.includes(filter) ? "" : "none";
         });
-    </script>
+    });
+</script>
 </body>
 </html>
+                
+                        
+                        

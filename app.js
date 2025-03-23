@@ -29,8 +29,8 @@ require("./models/m_eMeetingsEvents")
 require("./models/m_ePafoSeats")
 const BudgetPlanning =  require("./models/f_BudgetPlanning")
 
-
 const Project = require("./models/Project")
+const ProjectBudget = require("./models/ProjectBudget")
 const fComponent = require("./models/f_Component")
 const fActivity = require("./models/f_activity")
 // const partnershipRoutes = require('./routes/partnershipRoutes');
@@ -39,6 +39,12 @@ var app = express();
 const sequelize = require('./config/database');
 
 // Define relationships here
+Project.hasMany(ProjectBudget,{foreignKey: "project_id"})
+ProjectBudget.belongsTo(Project,{foreignKey:"project_id", onDelete:"CASCADE",onUpdate:"CASCADE"})
+Project.hasMany(BudgetPlanning,{foreignKey:"project_id",onDelete:"CASCADE"})
+BudgetPlanning.belongsTo(Project,{foreignKey:"project_id",onDelete:"CASCADE"})
+// BudgetPlanning.hasMany(BudgetPlanning,{foreignKey:"parent_id", as:"myBudgets", onDelete:"CASCADE"})
+// BudgetPlanning.belongsTo(BudgetPlanning,{foreignKey:"parent_id",onDelete:"CASCADE",as:"myBudgets"})
 
 fComponent.belongsTo(Project, { foreignKey: "project_id" });
 Project.hasMany(fComponent, { foreignKey: "project_id" });
@@ -46,7 +52,6 @@ fActivity.belongsTo(fComponent, { foreignKey: "component_id" });
 fComponent.hasMany(fActivity, { foreignKey: "component_id" });
 fActivity.belongsTo(fActivity, { as: "ParentActivity", foreignKey: "parent_id" });
 fActivity.hasMany(fActivity, { as: "Subactivities", foreignKey: "parent_id" });
-
 // fActivity.hasMany(fActivity, { as: "Subactivities", foreignKey: "parent_id" });
 fActivity.hasMany(fActivity, { as: "SubSubactivities", foreignKey: "parent_id" });
 fActivity.hasMany(fActivity, { as: "SSubactivities", foreignKey: "parent_id" });
@@ -62,7 +67,6 @@ app.set('view engine', 'ejs');
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-// app.use(cookieParser());
 
 app.use(session({ secret: 'secret', resave: false, saveUninitialized: true }));
 app.use(flash());
