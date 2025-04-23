@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= title %></title>
+    <link rel='stylesheet' href='../../../stylesheets/style.css' />
+    <link rel='stylesheet' href='../../stylesheets/tailwind.css' />
+    <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+    <script src="//unpkg.com/alpinejs" defer></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css" integrity="sha512-5A8nwdMOWrSz20fDsjczgUidUBR8liPYU+WymTZP1lmY9G6Oc7HlZv156XqnsgNUzTyMefFTcsFH/tnJE/+xBg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    <style>
+      [x-cloak]{
+        display: none !important;
+      }
+      body {
+            font-family: "Poppins", serif;
+            font-weight: 400;
+            font-style: normal;
+        }
+    </style>
+
+  </head>
+  <body>
+
+    <div class="grid grid-cols-6" >
+        <%- include("partials/sidebar") %>
+        <div class="col-span-5">
+           
+           
+            <div class="max-w-5xl  mx-auto">
+
+                <div>
+                    <p class="px-2 py-3 "><strong class="text-sm"><%= title %></strong></p>
+
+                </div>
+                <div x-data="{ isModalOpen: false }" class="">
+                    
+                    <div class="flex">
+                        <div class="flex-1">
+                            <div x-data="{ open: false }">
+                                <button @click="open = true" class="bg-blue-500 text-white px-4 py-2 rounded">
+                                    Add Task
+                                </button>
+                            
+                                <div
+                                    x-show="open"
+                                    class="fixed inset-0 flex items-center justify-center bg-black/30 bg-opacity-50 z-50"
+                                >
+                                    <div
+                                        @click.away="open = false"
+                                        class="bg-white rounded-lg shadow-xl w-full max-w-3xl p-6"
+                                    >
+                                        <h2 class="text-xl font-semibold mb-4">Add Task</h2>
+                                        <div x-data="taskForm()" class="p-4">
+                                            <form action="/finance/implementation" method="post">
+                                              <div class="grid grid-cols-2 gap-4 mb-4">
+                                                <input type="hidden" name="budgetPlanningId" value="<%= budget.id %>" />
+                                                <input type="hidden" name="year" value="<%= budget.year %>" />
+                                                <div>
+                                                  <label class="block text-sm font-medium mb-1">Task</label>
+                                                  <input type="text" name="task" class="w-full border rounded px-2 py-1"
+                                                   placeholder="Task" required />
+                                                </div>
+                                                <div>
+                                                  <label class="block text-sm font-medium mb-1">Amount</label>
+                                                  <input type="number" name="amount" class="w-full border rounded px-2 py-1" placeholder="Amount" required />
+                                                </div>
+                                                <div>
+                                                  <label class="block text-sm font-medium mb-1">Done by</label>
+                                                  <input type="text" name="doneBy" class="w-full border rounded px-2 py-1" placeholder="Done by" required />
+                                                </div>
+                                                <div>
+                                                  <label class="block text-sm font-medium mb-1">Date</label>
+                                                  <input type="date" name="date" class="w-full border rounded px-2 py-1" required />
+                                                </div>
+                                                <div class="col-span-2">
+                                                  <label class="block text-sm font-medium mb-1">Description</label>
+                                                  <textarea name="description" class="w-full border rounded px-2 py-1" placeholder="Description"></textarea>
+                                                </div>
+                                              </div>
+                                          
+                                              <div class="flex justify-end mt-4 space-x-2">
+                                                <button type="button" @click="open = false" class="px-4 py-2 bg-gray-300 rounded">Cancel</button>
+                                                <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded">Save</button>
+                                              </div>
+                                            </form>
+                                          </div>
+                                        
+                                    </div>
+                                </div>
+                            </div>
+                            
+                        </div>
+                        <div class="flex justify-between gap-4 ">
+                            <div class="flex-1 ">
+                                <input type="text" id="search" placeholder="Search" class="mb-4 p-2 border border-gray-300 rounded ">
+                            </div>
+                            
+                        </div>
+                    </div>
+                   
+                </div>
+                    <div>
+                        <p>Component Name:<b><%= budget.f_Component.name %></b> </p>
+                        <p>Amount Planned:<b><%= budget.amount_planned %></b> </p>
+                    </div>
+                <table class="w-full border-collapse border border-gray-300" id="componentTable">
+                    <thead>
+                        <tr class="bg-gray-200">
+                            <th class="border px-4 py-2">#</th>
+                            <th class="border px-4 py-2">Task</th>
+                            <th class="border px-4 py-2">Description</th>
+                            <th class="border px-4 py-2">Done by</th>
+                            <th class="border px-4 py-2">Amount</th>
+                            <th class="border px-4 py-2">Date</th>
+                            <th class="border px-4 py-2">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                      <% budget.Implementations.forEach((data,index)=>{ %> 
+                    
+                         <tr>
+                            <td class="border px-4 py-2">Task</td>
+                            <td class="border px-4 py-2">Description</td>
+                            <td class="border px-4 py-2">Done by</td>
+                            <td class="border px-4 py-2">Amount</td>
+                            <td class="border px-4 py-2">Date</td>
+                            <td class="border px-4 py-2">Action</td>
+                          </tr>
+
+                       <% }) %>
+                    </tbody>
+                </table>
+            </div>
+            
+        </div>
+    </div>
+    <script>
+        function taskForm() {
+          return {
+            task: '',
+            amount: '',
+            doneBy: '',
+            date: '',
+            description: '',
+            async submitForm() {
+              try {
+                const response = await fetch('/your-endpoint-url', {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json'
+                  },
+                  body: JSON.stringify({
+                    task: this.task,
+                    amount: this.amount,
+                    doneBy: this.doneBy,
+                    date: this.date,
+                    description: this.description
+                  })
+                });
+      
+                const result = await response.json();
+                if (response.ok) {
+                  alert('Task saved successfully');
+                  // Optionally reset fields or close modal
+                } else {
+                  alert(result.message || 'Failed to save');
+                }
+              } catch (error) {
+                console.error(error);
+                alert('An error occurred');
+              }
+            }
+          };
+        }
+      </script>
+    <script>
+        document.getElementById("search").addEventListener("input", function () {
+            let filter = this.value.toLowerCase();
+            let rows = document.querySelectorAll("#componentTable tr");
+    
+            rows.forEach(row => {
+                let projectName = row.children[1].textContent.toLowerCase();
+                row.style.display = projectName.includes(filter) ? "" : "none";
+            });
+        });
+    </script>
+</body>
+</html>

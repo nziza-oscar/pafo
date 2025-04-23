@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= title %></title>
+    <link rel='stylesheet' href='../../stylesheets/style.css' />
+    <link rel='stylesheet' href='../../stylesheets/tailwind.css' />
+    <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+    <script src="//unpkg.com/alpinejs" defer></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css" integrity="sha512-5A8nwdMOWrSz20fDsjczgUidUBR8liPYU+WymTZP1lmY9G6Oc7HlZv156XqnsgNUzTyMefFTcsFH/tnJE/+xBg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    <style>
+      [x-cloak]{
+        display: none !important;
+      }
+      body {
+            font-family: "Poppins", serif;
+            font-weight: 400;
+            font-style: normal;
+        }
+    </style>
+
+  </head>
+  <body>
+
+    <div class="grid grid-cols-6" >
+        <%- include("partials/sidebar") %>
+        <div class="col-span-5" >
+            <h2 class="px-2 py-3 "><%= title %></h2>
+
+           
+            <div class="max-w-5xl  mx-auto" x-data="{showModal: false }">
+
+                
+
+
+                <div class="w-1/2">
+                    <input type="text" id="search" placeholder="Search Project..." class="mb-4 p-2 border border-gray-300 rounded w-full">
+                </div>
+<div x-data="{open: false, components:[]}">
+
+ 
+    <div
+    x-show="showModal"
+    class="fixed inset-0 flex items-center justify-center bg-black/30 bg-opacity-50 z-50"
+                >
+                    <div
+                        @click.away="showModal = false"
+                        class="bg-white rounded-lg shadow-xl w-full max-w-5xl p-6"
+                    >
+                        <h2 class="text-xl font-semibold mb-4">Implementations</h2>
+                        <div class="p-4" x-data="handleImplementation()">
+                            <form action="/finance/implementation" method="post">
+                              <div class="grid grid-cols-2 gap-4 mb-4">
+                                
+                                <div>
+                                  <label class="block text-sm font-medium mb-1">Component</label>
+                                  <select name="task" class="w-full border rounded px-2 py-1"
+                                   placeholder="Task" required @change="handleComponentChange">
+                                        <option value=""> Choose Component </option>
+                                        <template x-for="(comp,index) in components">
+                                            <option :value="comp.id" x-text="comp.name"> </option>
+                                        </template>
+                                </select>
+                                </div>
+
+                                <div>
+                                    <label class="block text-sm font-medium mb-1">Year</label>
+                                    <select name="task" class="w-full border rounded px-2 py-1"
+                                     placeholder="Task" required @change="handleYearChange" >
+                                          <option value=""> Choose Year </option>
+                                          <template x-for="(b,index) in years">
+                                            <option :value="b.year+'-'+b.amount_planned" x-text="b.year"> </option>
+                                        </template>
+                                  </select>
+                                  </div>
+
+                                <div>
+                                    <label class="block text-sm font-medium mb-1">Amount Planned</label>
+                                    <input type="number" x-modal="amount_planned" :value="amount_planned" name="amount_planned" class="w-full border rounded px-2 py-1"
+                                     placeholder="amount planned" required readonly/  >
+                               
+                                </div>
+
+                                   
+                                 
+                                <div>
+                                    <label class="block text-sm font-medium mb-1">Activity</label>
+                                    <select type="text" name="task" class="w-full border rounded px-2 py-1"
+                                     placeholder="Task" required >
+                                     <option value="">Choose Activity</option>
+                                     <template x-for="(b,index) in activities">
+                                        <option :value="b.id" x-text="b.name"> </option>
+                                    </template>
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <label class="block text-sm font-medium mb-1">Sub-ctivity</label>
+                                    <select  name="task" class="w-full border rounded px-2 py-1"
+                                     placeholder="Task" required >
+                                       <option value="">Choose Sub-ctivity</option>
+                                    </select>
+                                </div>
+
+
+
+                                <div>
+                                  <label class="block text-sm font-medium mb-1">Amount</label>
+                                  <input type="number" name="amount" class="w-full border rounded px-2 py-1" placeholder="Amount" required />
+                                </div>
+                                <div>
+                                  <label class="block text-sm font-medium mb-1">Done by</label>
+                                  <input type="text" name="doneBy" class="w-full border rounded px-2 py-1" placeholder="Done by" required />
+                                </div>
+                                <div>
+                                  <label class="block text-sm font-medium mb-1">Date</label>
+                                  <input type="date" name="date" class="w-full border rounded px-2 py-1" required />
+                                </div>
+                                <div class="col-span-2">
+                                  <label class="block text-sm font-medium mb-1">Description</label>
+                                  <textarea name="description" class="w-full border rounded px-2 py-1" placeholder="Description"></textarea>
+                                </div>
+                              </div>
+                          
+                              <div class="flex justify-end mt-4 space-x-2">
+                                <button type="button" @click="showModal = false" class="px-4 py-2 bg-gray-300 rounded">Cancel</button>
+                                <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded">Save</button>
+                              </div>
+                            </form>
+                          </div>
+                        
+                    </div>
+</div>
+<table class="w-full border-collapse border border-gray-300" id="projectTable">
+    <thead>
+        <tr class="bg-gray-200">
+            <th class="border px-4 py-2">#</th>
+            <th class="border px-4 py-2">Project Name</th>
+            <th class="border px-4 py-2">Start Date</th>
+            <th class="border px-4 py-2">End Date</th>
+            <th class="border px-4 py-2">Budget Planned</th>
+            <th class="border px-4 py-2">Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        
+        <% data.forEach((project, index) => { %>
+            <tr class="text-left">
+                <td class="border px-4 py-2"><%= index + 1 %></td>
+                <td class="border px-4 py-2"><%= project.name %></td>
+                <td class="border px-4 py-2"><%= project.startDate %></td>
+                <td class="border px-4 py-2"><%= project.endDate %></td>
+                <td class="border px-4 py-2">500,000,000 FRW</td>
+                <td class="border px-4 py-2">
+                    <div class="flex gap-1">
+                        <!-- <a href="components/<%= project.id %>/general-report"  class="bg-green-500 text-white whitespace-nowrap px-2 text-sm py-1 rounded"> <i class="fa fa-book"></i> General Report</a> -->
+                        <!-- <a href="/finance/finance-implementation/components/<%= project.id %>/list"  
+                            class="bg-yellow-500 text-white px-4 py-1 rounded">Components</a> -->
+                        <button @click="showModal=true; components=<%= JSON.stringify(project.f_Components) %>">Implementations</button>
+
+                    </div>
+                </td>
+            </tr>
+        <% }) %>
+    </tbody>
+</table>
+
+</div>
+            </div>
+            
+        </div>
+    </div>
+    <script>
+        function handleImplementation(){
+
+            return {
+                years:[],
+                amount_planned:0,
+                activities:[],
+                subActivities:[],
+                
+                handleComponentChange (e){
+                    // alert(e.target.value)
+                    const f = this.components.find((c)=>c.id == e.target.value) 
+                    
+                    if(f){
+                        const { budget_plannings , f_activities} = f
+                        this.years = budget_plannings.filter((b)=>b.account_type=='COMPONENT');
+                        this.activities = f_activities.filter((c)=>c.component_id  == e.target.value)
+                        
+                    }
+                },
+                handleActivityChange (e){
+                    const { value } = e.target
+                    const {sub_activities} = this.activities
+                },
+
+                handleYearChange(e){
+                     const { value } = e.target
+                     this.amount_planned = value.split("-")[1]
+                     const year =  value.split('-')[0]
+                   
+                },
+
+            }
+        }
+        document.getElementById("search").addEventListener("input", function () {
+            let filter = this.value.toLowerCase();
+            let rows = document.querySelectorAll("#projectTable tr");
+    
+            rows.forEach(row => {
+                let projectName = row.children[1].textContent.toLowerCase();
+                row.style.display = projectName.includes(filter) ? "" : "none";
+            });
+        });
+    </script>
+</body>
+</html> 

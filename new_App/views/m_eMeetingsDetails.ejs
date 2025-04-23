@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= title %></title>
+    <link rel='stylesheet' href='../../stylesheets/style.css' />
+    <link rel='stylesheet' href='../../stylesheets/tailwind.css' />
+    <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+    <script src="//unpkg.com/alpinejs" defer></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css" integrity="sha512-5A8nwdMOWrSz20fDsjczgUidUBR8liPYU+WymTZP1lmY9G6Oc7HlZv156XqnsgNUzTyMefFTcsFH/tnJE/+xBg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    <style>
+      [x-cloak]{
+        display: none !important;
+      }
+      body {
+            font-family: "Poppins", serif;
+            font-weight: 400;
+            font-style: normal;
+        }
+        .bg-green-600{
+            background-color: #388e3c;
+            color: aliceblue;
+        }
+    </style>
+
+  </head>
+  <body>
+<div class="grid grid-cols-6" >
+    <%- include("partials/sidebar") %>
+    <div class="col-span-5" id="content-area" x-data="{ activeTab: 1 }">
+        <h2 class="px-2 py-3 "><%= title %></h2>
+
+        <div class="max-w-6xl mx-auto bg-white p-6 rounded-lg shadow-md" x-data="{ tab: 'list' }">
+            <div class="flex space-x-4 border-b pb-2 mb-4">
+                <a href="/m_egeneric"  class="px-4 py-2 bg-gray-50 shadow rounded text-sm">Back <i class="fa fa-home"></i> </a>
+                <button @click="tab = 'list'" :class="{'font-bold border-b-2 border-blue-500 bg-green-600 rounded': tab === 'list'}" 
+                class="px-4 py-2 bg-gray-50 shadow rounded text-sm">Responsiblity <i class="fa fa-book"></i> </button>
+                <button @click="tab = 'form'" :class="{'font-bold border-b-2 border-blue-500 bg-green-600 rounded': tab === 'form'}" 
+                class="px-4 py-2 bg-gray-50 shadow rounded text-sm">Activities <i class="fa fa-book"></i></button>
+                <button @click="tab = 'provider'" :class="{'font-bold border-b-2 border-blue-500 bg-green-600 rounded': tab === 'provider'}" 
+                class="px-4 py-2 bg-gray-50 shadow rounded text-sm">Providers <i class="fa fa-book"></i></button>
+                <button @click="tab = 'report'" :class="{'font-bold border-b-2 border-blue-500 bg-green-600 rounded': tab === 'report'}" 
+                class="px-4 py-2 bg-gray-50 shadow rounded text-sm">General Report<i class="fa fa-book"></i></button>
+            </div>
+
+
+            

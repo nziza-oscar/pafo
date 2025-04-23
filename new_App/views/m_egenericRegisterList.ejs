@@ -1,0 +1,249 @@
+<%- include("partials/header",{title}) %>
+
+   
+    <div class="grid grid-cols-6" >
+        <%- include("partials/sidebar") %>
+        <div class="col-span-5" id="content-area" x-data="{ activeTab: 1 }">
+            <h2 class="px-2 py-3 "><%= title %></h2>
+
+            <div class="max-w-6xl mx-auto bg-white p-6 rounded-lg shadow-md" x-data="{ tab: 'list' }">
+                <div class="flex space-x-4 border-b pb-2 mb-4">
+                    <button @click="tab = 'list'" :class="{'font-bold border-b-2 border-blue-500 bg-green-600 rounded': tab === 'list'}" class="px-4 py-2 bg-gray-50 shadow rounded text-sm">Basic Info <i class="fa fa-home"></i> </button>
+                    <button @click="tab = 'form'" :class="{'font-bold border-b-2 border-blue-500 bg-green-600 rounded': tab === 'form'}" class="px-4 py-2 bg-gray-50 shadow rounded text-sm">New <i class="fa fa-plus"></i></button>
+                    <button @click="tab = 'report'" :class="{'font-bold border-b-2 border-blue-500 bg-green-600 rounded': tab === 'report'}" class="px-4 py-2 bg-gray-50 shadow rounded text-sm">Report <i class="fa fa-book"></i></button>
+                </div>
+        
+                <div x-show="tab === 'list'" class="overflow-x-auto">
+                    <h2 class="text-md mb-4 text-gray-500">Basic Info</h2>
+                    <table class="w-full border-collapse border border-gray-300">
+                        <thead>
+                            <tr class="bg-gray-100">
+                                <th class="px-4 py-2 text-sm whitespace-nowrap text-left">#</th>
+                                <th class="px-4 py-2 text-sm whitespace-nowrap text-left">Title</th>
+                                <th class="px-4 py-2 text-sm whitespace-nowrap text-left">Venue</th>
+                                <th class="px-4 py-2 text-sm whitespace-nowrap text-left">Organized By</th>
+                                <th class="px-4 py-2 text-sm whitespace-nowrap text-left">Budget Spent</th>
+                                <th class="px-4 py-2 text-sm whitespace-nowrap text-left">Currency</th>
+                                <th class="px-4 py-2 text-sm whitespace-nowrap text-left">Donation Estimation</th>
+                                <th class="px-4 py-2 text-sm whitespace-nowrap text-left">Activity Budget Line</th>
+                                <th class="px-4 py-2 text-sm whitespace-nowrap text-left">Minutes Report</th>
+                                <th class="px-4 py-2 text-sm whitespace-nowrap text-left">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% if (data.length > 0) { %>
+                                <% data.forEach((item, index) => { %>
+                                    <tr class="border-t">
+                                        <td class="px-4 py-2 whitespace-nowrap"><%= index + 1 %></td>
+                                        <td class="px-4 py-2 whitespace-nowrap"><%= item.title %></td>
+                                        <td class="px-4 py-2 whitespace-nowrap"><%= item.venue %></td>
+                                        <td class="px-4 py-2 whitespace-nowrap"><%= item.organizedBy %></td>
+                                        <td class="px-4 py-2whitespace-nowrap"><%= item.budget_spent %></td>
+                                        <td class="px-4 py-2whitespace-nowrap"><%= item.currency %></td>
+                                        <td class="px-4 py-2whitespace-nowrap"><%= item.donation_estimation %></td>
+                                        <td class="px-4 py-2whitespace-nowrap"><%= item.activity_budget_line %></td>
+                                        <td class="px-4 py-2 whitespace-nowrap">
+                                            <% if (item.minutes_report != "") { %>
+                                                <a href="<%= item.minutes_report %>" class="text-blue-500 bg-blue-100 px-2 py-1 rounded" download>
+                                                    <i class="fa fa-download"></i> Download
+                                                </a>
+                                            <% } else { %>
+                                                <span class="text-gray-500">No File</span>
+                                            <% } %>
+                                        </td>
+                                        <td class="px-4 py-2 whitespace-nowrap">
+                                            <div class="flex gap-2">
+                                                <a href="/m_egeneric/edit/<%= item.id %>" class="text-blue-500 bg-blue-100 px-2 py-1 rounded"><i class="fa fa-edit"></i></a>
+                                                <a href="/m_egeneric/view/<%= item.id %>" class="text-blue-500 bg-blue-100 px-2 py-1 rounded"><i class="fa fa-eye"></i></a>
+                                                <a href="/m_egeneric/delete/<%= item.id %>" class="text-red-500 bg-red-100 px-2 py-1 rounded"><i class="fa fa-trash"></i></a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                <% }); %>
+                            <% } else { %>
+                                <tr>
+                                    <td colspan="10" class="px-4 py-2 text-center text-gray-500">No records found</td>
+                                </tr>
+                            <% } %>
+                        </tbody>
+                        
+                  </table>
+                </div>
+        
+                <div x-cloak x-show="tab === 'form'" class="mt-4 max-w-4xl mx-auto">
+                    <h2 class="text-xl font-semibold mb-4">Record Basic Info </h2>
+
+                    <form action="/m_egeneric/create" method="POST" enctype="multipart/form-data" class="grid grid-cols-2 gap-4" >
+                        <div>
+                            <label class="text-sm">Title</label>
+                            <input type="text" name="title" placeholder="Enter title..." class="w-full px-4 py-2 border rounded" required>
+                        </div>
+                    
+                        <div>
+                            <label class="text-sm">Venue</label>
+                            <input type="text" name="venue" placeholder="Enter venue..." class="w-full px-4 py-2 border rounded" required>
+                        </div>
+                    
+                        <div>
+                            <label class="text-sm">Organized By</label>
+                            <input type="text" name="organizedBy" placeholder="Enter organizer..." class="w-full px-4 py-2 border rounded" required>
+                        </div>
+                    
+                        <div>
+                            <label class="text-sm">Minutes Report (Upload)</label>
+                            <input type="file" name="minutes_report" class="w-full px-4 py-2 border rounded" required>
+                        </div>
+                    
+                        <div>
+                            <label class="text-sm">Budget Spent</label>
+                            <input type="number" name="budget_spent" placeholder="Enter budget..." class="w-full px-4 py-2 border rounded">
+                        </div>
+                    
+                        <div>
+                            <label class="text-sm">Currency</label>
+                            <select name="currency" class="w-full px-4 py-2 border rounded" required>
+                                <option value="USD">USD ($)</option>
+                                <option value="EUR">EUR (€)</option>
+                                <option value="RWF">RWF (rwf)</option>
+                            </select>
+                        </div>
+                    
+                        <div>
+                            <label class="text-sm">Donation Estimation</label>
+                            <input type="text" name="donation_estimation" placeholder="Enter estimation..." class="w-full px-4 py-2 border rounded" required>
+                        </div>
+                    
+                        <div>
+                            <label class="text-sm">Activity Budget Line</label>
+                            <input type="text" name="activity_budget_line" placeholder="Enter budget line..." class="w-full px-4 py-2 border rounded" required>
+                        </div>
+                    
+                        <div class="col-span-2">
+                            <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded">Save</button>
+                        </div>
+                    </form>
+                    
+                    
+                </div>
+
+                <div x-cloak x-show="tab === 'report'" class="">
+
+                    <div class="flex justify-between items-center">
+                        <h2 class="text-md mb-4 text-gray-500">Report</h2>
+                        <a href="m_egeneric/download" class="bg-success text-white py-2 px-3 rounded hover:text-green-800 flex items-center space-x-2">
+                            <i class="fa fa-book"></i> <!-- Excel icon -->
+                            <span>Export Excel</span>
+                        </a>
+                    </div>
+                   
+                    <div class=" bg-white my-2 overflow-x-auto">
+                        
+                     
+                        <table class="w-full bg-white border rounded-lg shadow-md">
+                            <thead>
+                                <tr class="bg-gray-100">
+                                    <thead>
+                                        <tr class="bg-gray-100">
+                                            <th class="px-4 py-2 text-sm whitespace-nowrap text-left">#</th>
+                                            <th class="px-4 py-2 text-sm whitespace-nowrap text-left">Title</th>
+                                            <th class="px-4 py-2 text-sm whitespace-nowrap text-left">Venue</th>
+                                            <th class="px-4 py-2 text-sm whitespace-nowrap text-left">Organized By</th>
+                                            <th class="px-4 py-2 text-sm whitespace-nowrap text-left">Budget Spent</th>
+                                            <th class="px-4 py-2 text-sm whitespace-nowrap text-left">Currency</th>
+                                            <th class="px-4 py-2 text-sm whitespace-nowrap text-left">Donation Estimation</th>
+                                            <th class="px-4 py-2 text-sm whitespace-nowrap text-left">Activity Budget Line</th>
+                                            
+                                        </tr>
+                                    </thead>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% if (data.length > 0) { %>
+                                    <% data.forEach((item, index) => { %>
+                                        <tr class="border-t">
+                                            <td class="px-4 py-2 whitespace-nowrap"><%= index + 1 %></td>
+                                            <td class="px-4 py-2 whitespace-nowrap"><%= item.title %></td>
+                                            <td class="px-4 py-2 whitespace-nowrap"><%= item.venue %></td>
+                                            <td class="px-4 py-2 whitespace-nowrap"><%= item.organizedBy %></td>
+                                            <td class="px-4 py-2whitespace-nowrap"><%= item.budget_spent %></td>
+                                            <td class="px-4 py-2whitespace-nowrap"><%= item.currency %></td>
+                                            <td class="px-4 py-2whitespace-nowrap"><%= item.donation_estimation %></td>
+                                            <td class="px-4 py-2whitespace-nowrap"><%= item.activity_budget_line %></td>
+                                        
+                                        </tr>
+                                    <% }); %>
+                                <% } else { %>
+                                    <tr>
+                                        <td colspan="10" class="px-4 py-2 text-center text-gray-500">No records found</td>
+                                    </tr>
+                                <% } %>
+                            </tbody>
+                        </table>
+                    </div>
+                
+                   
+                </div>
+                
+
+
+
+            </div>            
+        </div>
+    </div>
+
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+
+<script>
+     const endDate =     document.getElementById("endDate")
+   const startDate = document.getElementById("startDate")
+   const durationInput = document.getElementById("duration")
+    document.getElementById("startDate").addEventListener("input",function(){
+        // const endDate =     document.getElementById("endDate")
+        if(endDate.value  ){
+            if(startDate.value > endDate.value ){
+                alert("Starting date can not be greater than ending date")
+                startDate.value = ""
+                return 
+            }
+            const duration = calculateDuration(this.value,endDate.value)
+            durationInput.value = duration
+        }
+        
+    })
+    document.getElementById("endDate").addEventListener("input",function(){
+        // const endDate =     document.getElementById("endDate")
+        if(startDate.value ){
+            if(startDate.value > endDate.value ){
+                alert("Starting date can not be greater than ending date")
+                endDate.value = ""
+                return 
+            }
+            const duration = calculateDuration(startDate.value,this.value)
+     
+            durationInput.value = duration
+        }
+    
+    })
+
+
+const calculateDuration = (startDate, endDate) => {
+    if (startDate && endDate) {
+        const start = new Date(startDate);
+        const end = new Date(endDate);
+        const diffTime = Math.abs(end - start);
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+       return  (diffDays > 1) ? diffDays +' Days': (diffDays == 0 )?  '24hrs ':diffDays +' Day';
+      
+        
+    }
+};
+
+</script>
+  </body>
+</html>
+
+
+    
+ 
+

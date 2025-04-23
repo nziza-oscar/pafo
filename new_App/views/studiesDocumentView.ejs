@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= title %></title>
+    <link rel='stylesheet' href='../../stylesheets/style.css' />
+    <link rel='stylesheet' href='../../stylesheets/tailwind.css' />
+    <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+    <script src="//unpkg.com/alpinejs" defer></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css" integrity="sha512-5A8nwdMOWrSz20fDsjczgUidUBR8liPYU+WymTZP1lmY9G6Oc7HlZv156XqnsgNUzTyMefFTcsFH/tnJE/+xBg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    <style>
+      [x-cloak]{
+        display: none !important;
+      }
+      body {
+            font-family: "Poppins", serif;
+            font-weight: 400;
+            font-style: normal;
+        }
+        .bg-green-600{
+            background-color: #388e3c;
+            color: aliceblue;
+        }
+    </style>
+
+  </head>
+  <body>
+<div class="grid grid-cols-6" >
+    <%- include("partials/sidebar") %>
+    <div class="col-span-5" id="content-area" x-data="{ activeTab: 1 }">
+        <h2 class="px-2 py-3 "><%= title %></h2>
+
+        <div class="max-w-6xl mx-auto bg-white p-6 rounded-lg shadow-md" x-data="{ tab: 'list' }">
+            <div class="flex space-x-4 border-b pb-2 mb-4">
+                <a href="/m_estudies"  class="px-4 py-2 bg-gray-50 shadow rounded text-sm">Back <i class="fa fa-home"></i> </a>
+                <button @click="tab = 'list'" :class="{'font-bold border-b-2 border-blue-500 bg-green-600 rounded': tab === 'list'}" class="px-4 py-2 bg-gray-50 shadow rounded text-sm">Responsibles <i class="fa fa-book"></i> </button>
+                <button @click="tab = 'form'" :class="{'font-bold border-b-2 border-blue-500 bg-green-600 rounded': tab === 'form'}" class="px-4 py-2 bg-gray-50 shadow rounded text-sm">Donors <i class="fa fa-book"></i></button>
+                <button @click="tab = 'report'" :class="{'font-bold border-b-2 border-blue-500 bg-green-600 rounded': tab === 'report'}" class="px-4 py-2 bg-gray-50 shadow rounded text-sm">General Report <i class="fa fa-book"></i></button>
+            </div>
+    
+            <div x-show="tab === 'list'" class="overflow-x-auto">
+
+                <!-- <h2 class="text-md mb-4 text-gray-500">Additional info </h2> -->
+                <div x-data="{ showModal: false }" class=" py-3">
+                    <!-- New Button -->
+                    <button @click="showModal = true" class="float-right mb-2 px-4 text-sm py-2 bg-green-600 text-white rounded shadow flex items-center">
+                        <i class="fa fa-plus mr-2"></i> New
+                    </button>
+                
+                    <!-- Small Table: Responsibles -->
+                    <div class=" bg-white my-2">
+                        
+                        <table class="w-full border">
+                            <thead>
+                                <tr class="bg-gray-200">
+                                    <th class="px-4 py-2">#</th>
+                                    <th class="px-4 py-2">Position</th>
+                                    <th class="px-4 py-2">Responsible</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- m_eResponsibles -->
+                                <% data.m_eResponsibles.forEach((responsible,index) => { %>
+                                    <tr class="border-t">
+                                        <td class="px-4 py-2 whitespace-nowrap text-center"><%= index+1 %></td>
+                                        <td class="px-4 py-2 whitespace-nowrap text-center"><%= responsible.position %></td>
+                                        <td class="px-4 py-2 whitespace-nowrap text-center"><%= responsible.responsible %></td>
+                                    </tr>
+                                    <% }) %>
+
+                            </tbody>
+                        </table>
+                    </div>
+                
+                    <!-- Modal -->
+                    <div x-cloak x-show="showModal" class="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
+                        <div class="bg-white p-6 rounded-lg shadow-lg w-96">
+                            <h2 class="text-xl font-semibold mb-4">Add New Responsible</h2>
+                            <form action="/m_estudies/responsibles/create/<%= data.id %>" method="POST" class="space-y-3">
+                                <input type="text" name="position" placeholder="Position" class="w-full p-2 border rounded" required>
+                                <input type="text" name="name" placeholder="Responsible" class="w-full p-2 border rounded" required>
+                                <div class="flex justify-end space-x-2">
+                                    <button type="button" @click="showModal = false" class="px-4 py-2 bg-red-600 text-white rounded">Cancel</button>
+                                    <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded">Save</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+
+            <div x-show="tab === 'form'" class="overflow-x-auto">
+
+                <!-- <h2 class="text-md mb-4 text-gray-500">Additional info </h2> -->
+                <div x-data="{ showModal: false }" class=" py-3">
+                    <!-- New Button -->
+                    <button @click="showModal = true" class="float-right mb-2 px-4 text-sm py-2 bg-green-600 text-white rounded shadow flex items-center">
+                        <i class="fa fa-plus mr-2"></i> New
+                    </button>
+                
+                    <!-- Small Table: Responsibles -->
+                    <div class=" bg-white my-2">
+                        
+                        <table class="w-full border">
+                            <thead>
+                                <tr class="bg-gray-200">
+                                    <th class="px-4 py-2">#</th>
+                                    <th class="px-4 py-2">Donor</th>
+                                    <!-- <th class="px-4 py-2">Responsible</th> -->
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% data.m_eDonors.forEach((donor,index) => { %>
+                                    <tr class="border-t">
+                                        <td class="px-4 py-2 whitespace-nowrap text-center"><%= index+1 %></td>
+                                        <td class="px-4 py-2 whitespace-nowrap text-center"><%= donor.name %></td>
+                                     
+                                    </tr>
+                                    <% }) %>
+                            </tbody>
+                        </table>
+                    </div>
+                
+                    <!-- Modal -->
+                    <div x-cloak x-show="showModal" class="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
+                        <div class="bg-white p-6 rounded-lg shadow-lg w-96">
+                            <h2 class="text-xl font-semibold mb-4">Add Donor </h2>
+                            <form action="/m_estudies/donors/create/<%= data.id %>" method="POST" class="space-y-3">
+                                <input type="text" name="donor" placeholder="Donor" class="w-full p-2 border rounded" required>
+                            
+                                <div class="flex justify-end space-x-2">
+                                    <button type="button" @click="showModal = false" class="px-4 py-2 bg-red-600 text-white rounded">Cancel</button>
+                                    <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded">Save</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+    
+
+                <div x-show="tab === 'report'" class="overflow-x-auto">
+
+             
+                    <!-- Small Table: Responsibles -->
+                    <div class=" bg-white my-2">
+                        
+                        <table class="w-full bg-white border rounded-lg shadow-md">
+                            <thead>
+                                <tr class="bg-gray-100">
+                                    <th class="px-4 py-2 text-sm whitespace-nowrap text-left">Title</th>
+                                    <th class="px-4 py-2 text-sm whitespace-nowrap text-left">Responsible</th>
+                                    <th class="px-4 py-2 text-sm whitespace-nowrap text-left">Donor</th>
+                                    <th class="px-4 py-2 text-sm whitespace-nowrap text-left">Start Date</th>
+                                    <th class="px-4 py-2 text-sm whitespace-nowrap text-left">End Date</th>
+                                    <th class="px-4 py-2 text-sm whitespace-nowrap text-left">Duration</th>
+                                    <th class="px-4 py-2 text-sm whitespace-nowrap text-left">Category</th>
+                                    <th class="px-4 py-2 text-sm whitespace-nowrap text-left">Data Method</th>
+                                    <th class="px-4 py-2 text-sm whitespace-nowrap text-left">Donation</th>
+                                    <th class="px-4 py-2 text-sm whitespace-nowrap text-left">Program</th>
+                                    <th class="px-4 py-2 text-sm whitespace-nowrap text-left">Donor</th>
+                                    <th class="px-4 py-2 text-sm whitespace-nowrap text-left">Comments</th>
+                                   
+                                </tr>
+                            </thead>
+                            <tbody>
+                               
+                                <tr class="border-t text-sm">
+                                    <td class="px-4 py-2 whitespace-nowrap"><%= data.title %></td>
+                                    <td class="px-4 py-2 ">
+                                        <% data.m_eResponsibles.forEach((responsible,index) => { %>
+                                           
+                                                <span class="text-xs"><%= responsible.position %></span>
+                                                <span class="text-xs"><%= responsible.responsible %></span>
+                                                <hr/>
+                                            
+                                            <% }) %>
+                                    </td>
+
+                                    <td class="px-4 py-2 ">
+                                        <% data.m_eDonors.forEach((responsible,index) => { %>
+                                           
+                                               
+                                                <span class="text-xs"><%= responsible.name %></span>
+                                                <hr/>
+                                            
+                                            <% }) %>
+                                    </td>
+                                    
+                                    <td class="px-4 py-2 whitespace-nowrap"><%= new Date(data.start_date).toISOString().split('T')[0] %></td>
+                                    <td class="px-4 py-2 whitespace-nowrap"><%= new Date(data.end_date).toISOString().split('T')[0] %></td>
+                                    <td class="px-4 py-2 whitespace-nowrap"><%= data.duration %></td>
+                                    <td class="px-4 py-2"><%= data.category %></td>
+                                    <td class="px-4 py-2 whitespace-nowrap"><%= data.data_collection_method %></td>
+                                    <td class="px-4 py-2 whitespace-nowrap"><%= data.donation %></td>
+                                    <td class="px-4 py-2 whitespace-nowrap"><%= data.program %></td>
+                                    <td class="px-4 py-2 whitespace-nowrap"><%= data.donor %></td>
+                                    <td class="px-4 py-2 whitespace-nowrap"><%= data.comments %></td>
+    
+                                </tr>
+                                   
+                            </tbody>
+                        </table>
+                    </div>
+                
+                   
+                </div>
+                
+            </div>
+    
+
+
+
+        </div>            
+    </div>
+</div>

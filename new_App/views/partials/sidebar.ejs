@@ -1,0 +1,38 @@
+<div class="bg-success text-white vh-100 p-3 col-span-1 h-screen">
+    <h2 class="h5 mb-4 font-bold text-xl text-center pb-4">M&E PAFO</h2>
+    <ul class="nav flex-column space-y-4">
+        <li class="nav-item"><a href="/" class="nav-link text-white" id="home-link">Home</a></li>
+        <li class="nav-item"><a href="/partnership" class="nav-link text-white" id="partnership-link">Partnership</a></li>
+        <li class="nav-item"><a href="/m_estudies" class="nav-link text-white" id="studies-link">Studies & Document</a></li>
+        <li class="nav-item"><a href="/m_egeneric" class="nav-link text-white" id="register-link">Generic Register</a></li>
+        <li class="nav-item"><a href="/m_emeetings" class="nav-link text-white" id="meetings-link">Meetings & Events</a></li>
+        <li class="nav-item"><a href="/m_etrainings" class="nav-link text-white" id="trainings-link">Trainings</a></li>
+        <li class="nav-item"><a href="/m_epafo-seats" class="nav-link text-white" id="pafo-seats-link">Pafo Seats</a></li>
+
+        <!-- Finance Dropdown -->
+        <li class="nav-item relative" x-data="{ open: false }">
+            <a @click="open = !open" class="nav-link text-white flex items-center space-x-2 cursor-pointer">
+                <i class="fa fa-money"></i>
+                <span>Finance</span>
+                <i class="fa fa-caret-down"></i>
+            </a>
+            <ul x-show="open" @click.away="open = false" class=" text-white
+            w-48 mt-2 absolute left-0">
+                <li><a href="/finance/components" class="block px-4 py-2  flex items-center space-x-2">
+                    <i class="fa fa-cogs"></i> <span>Planning</span>
+                </a></li>
+                <li><a href="/finance-budget" class="block px-4 py-2  flex items-center space-x-2">
+                    <i class="fa fa-line-chart"></i> <span>Budget</span>
+                </a></li>
+                <li><a href="/finance/finance-implementation" class="block px-4 py-2  flex items-center space-x-2">
+                    <i class="fa fa-play"></i> <span>Implementation</span>
+                </a></li>
+                <li><a href="/finance-report" class="block px-4 py-2  flex items-center space-x-2">
+                    <i class="fa fa-file-text"></i> <span>Report</span>
+                </a></li>
+            </ul>
+        </li>
+
+    </ul>
+</div>
+

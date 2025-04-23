@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= title %></title>
+    <link rel='stylesheet' href='../../stylesheets/style.css' />
+    <link rel='stylesheet' href='../../stylesheets/tailwind.css' />
+    <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+    <script src="//unpkg.com/alpinejs" defer></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css" integrity="sha512-5A8nwdMOWrSz20fDsjczgUidUBR8liPYU+WymTZP1lmY9G6Oc7HlZv156XqnsgNUzTyMefFTcsFH/tnJE/+xBg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    <style>
+      [x-cloak]{
+        display: none !important;
+      }
+      body {
+            font-family: "Poppins", serif;
+            font-weight: 400;
+            font-style: normal;
+        }
+    </style>
+
+  </head>
+  <body>
+
+    <div class="grid grid-cols-6" >
+        <%- include("partials/sidebar") %>
+        <div class="col-span-5">
+            <h2 class="px-2 py-3 "><%= title %></h2>
+
+           
+            <div class="max-w-5xl  mx-auto">
+                <div class="w-1/2">
+                    <input type="text" id="search" placeholder="Search Project..." class="mb-4 p-2 border border-gray-300 rounded w-full">
+    
+                </div>
+                <table class="w-full border-collapse border border-gray-300" id="projectTable">
+                    <thead>
+                        <tr class="bg-gray-200">
+                            <th class="border px-4 py-2">#</th>
+                            <th class="border px-4 py-2">Project Name</th>
+                            <th class="border px-4 py-2">Start Date</th>
+                            <th class="border px-4 py-2">End Date</th>
+                            <th class="border px-4 py-2">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        
+                        <% data.forEach((project, index) => { %>
+                            <tr class="text-left">
+                                <td class="border px-4 py-2"><%= index + 1 %></td>
+                                <td class="border px-4 py-2"><%= project.name %></td>
+                                <td class="border px-4 py-2"><%= project.startDate %></td>
+                                <td class="border px-4 py-2"><%= project.endDate %></td>
+                                <td class="border px-4 py-2">
+                                    <div class="flex gap-1">
+                                        <a href="components/<%= project.id %>/general-report"  class="bg-green-500 text-white whitespace-nowrap px-2 text-sm py-1 rounded"> <i class="fa fa-book"></i> General Report</a>
+                                        <a href="components/<%= project.id %>/list"  class="bg-yellow-500 text-white px-4 py-1 rounded">Planning</a>
+                                    </div>
+                                </td>
+                            </tr>
+                        <% }) %>
+                    </tbody>
+                </table>
+            </div>
+            
+        </div>
+    </div>
+    <script>
+        document.getElementById("search").addEventListener("input", function () {
+            let filter = this.value.toLowerCase();
+            let rows = document.querySelectorAll("#projectTable tr");
+    
+            rows.forEach(row => {
+                let projectName = row.children[1].textContent.toLowerCase();
+                row.style.display = projectName.includes(filter) ? "" : "none";
+            });
+        });
+    </script>
+</body>
+</html> 

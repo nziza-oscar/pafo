@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= title %></title>
+    <link rel='stylesheet' href='../../stylesheets/style.css' />
+    <link rel='stylesheet' href='../../stylesheets/tailwind.css' />
+    <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+    <script src="//unpkg.com/alpinejs" defer></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css" integrity="sha512-5A8nwdMOWrSz20fDsjczgUidUBR8liPYU+WymTZP1lmY9G6Oc7HlZv156XqnsgNUzTyMefFTcsFH/tnJE/+xBg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    <style>
+      [x-cloak]{
+        display: none !important;
+      }
+      body {
+            font-family: "Poppins", serif;
+            font-weight: 400;
+            font-style: normal;
+        }
+        .bg-green-600{
+            background-color: #388e3c;
+            color: aliceblue;
+        }
+    </style>
+
+  </head>
+  <body>
+<div class="grid grid-cols-6" >
+    <%- include("partials/sidebar") %>
+        <div class="col-span-5" id="content-area" x-data="{ activeTab: 1 }">
+            <h2 class="px-2 py-3 "><%= title %></h2>
+
+            <div class="max-w-4xl  bg-white p-6 " x-data="{ tab: 'list' }">
+                
+        
+                    <h2 class="text-xl font-semibold mb-4">Update</h2>
+
+                    <form action="/m_egeneric/update/<%= generic.id %>" method="POST" class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="text-sm">Title</label>
+                            <input type="text" name="title" value="<%= generic.title %>" class="w-full px-4 py-2 border rounded" required>
+                        </div>
+                    
+                        <div>
+                            <label class="text-sm">Venue</label>
+                            <input type="text" name="venue" value="<%= generic.venue %>" class="w-full px-4 py-2 border rounded" required>
+                        </div>
+                    
+                        <div>
+                            <label class="text-sm">Organized By</label>
+                            <input type="text" name="organizedBy" value="<%= generic.organizedBy %>" class="w-full px-4 py-2 border rounded" required>
+                        </div>
+                    
+                        <div>
+                            <label class="text-sm">Budget Spent</label>
+                            <input type="number" name="budget_spent" value="<%= generic.budget_spent || '' %>" class="w-full px-4 py-2 border rounded">
+                        </div>
+                    
+                        <div>
+                            <label class="text-sm">Currency</label>
+                            <select name="currency" class="w-full px-4 py-2 border rounded" required>
+                                <option value="USD" <%= generic.currency === 'USD' ? 'selected' : '' %>>USD ($)</option>
+                                <option value="EUR" <%= generic.currency === 'EUR' ? 'selected' : '' %>>EUR (€)</option>
+                                <option value="RWF" <%= generic.currency === 'RWF' ? 'selected' : '' %>>RWF (rwf)</option>
+                            </select>
+                        </div>
+                    
+                        <div>
+                            <label class="text-sm">Donation Estimation</label>
+                            <input type="text" name="donation_estimation" value="<%= generic.donation_estimation %>" class="w-full px-4 py-2 border rounded" required>
+                        </div>
+                    
+                        <div>
+                            <label class="text-sm">Activity Budget Line</label>
+                            <input type="text" name="activity_budget_line" value="<%= generic.activity_budget_line %>" class="w-full px-4 py-2 border rounded" required>
+                        </div>
+                    
+                        <div class="col-span-2">
+                            <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded">Update</button>
+                        </div>
+                    </form>
+                    
+                    
+               
+            </div>            
+        </div>
+    </div>
+
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+
+<script>
+     const endDate =     document.getElementById("endDate")
+   const startDate = document.getElementById("startDate")
+   const durationInput = document.getElementById("duration")
+    document.getElementById("startDate").addEventListener("input",function(){
+        // const endDate =     document.getElementById("endDate")
+        if(endDate.value  ){
+            if(startDate.value > endDate.value ){
+                alert("Starting date can not be greater than ending date")
+                startDate.value = ""
+                return 
+            }
+            const duration = calculateDuration(this.value,endDate.value)
+            durationInput.value = duration
+        }
+        
+    })
+    document.getElementById("endDate").addEventListener("input",function(){
+        // const endDate =     document.getElementById("endDate")
+        if(startDate.value ){
+            if(startDate.value > endDate.value ){
+                alert("Starting date can not be greater than ending date")
+                endDate.value = ""
+                return 
+            }
+            const duration = calculateDuration(startDate.value,this.value)
+     
+            durationInput.value = duration
+        }
+    
+    })
+
+
+const calculateDuration = (startDate, endDate) => {
+    if (startDate && endDate) {
+        const start = new Date(startDate);
+        const end = new Date(endDate);
+        const diffTime = Math.abs(end - start);
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+       return  (diffDays > 1) ? diffDays +' Days': (diffDays == 0 )?  '24hrs ':diffDays +' Day';
+      
+        
+    }
+};
+
+</script>
+  </body>
+</html>
+
+
+    
+ 
+

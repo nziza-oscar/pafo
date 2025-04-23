@@ -1,0 +1,182 @@
+<%- include("partials/header",{title}) %>
+    <div class="grid grid-cols-6" >
+        <%- include("partials/sidebar") %>
+        <div class="col-span-5" id="content-area" x-data="{ activeTab: 1 }">
+            <h2 class="px-2 py-3 "><%= title %></h2>
+
+            <div class="max-w-6xl mx-auto bg-white p-6 rounded-lg shadow-md" x-data="{ tab: 'list' }">
+                <div class="flex space-x-4 border-b pb-2 mb-4">
+                    <button @click="tab = 'list'" :class="{'font-bold border-b-2 border-blue-500 bg-green-600 rounded': tab === 'list'}" class="px-4 py-2 bg-gray-50 shadow rounded text-sm">Basic Info <i class="fa fa-home"></i> </button>
+                    <button @click="tab = 'form'" :class="{'font-bold border-b-2 border-blue-500 bg-green-600 rounded': tab === 'form'}" class="px-4 py-2 bg-gray-50 shadow rounded text-sm">New <i class="fa fa-plus"></i></button>
+                    <button @click="tab = 'report'" :class="{'font-bold border-b-2 border-blue-500 bg-green-600 rounded': tab === 'report'}" class="px-4 py-2 bg-gray-50 shadow rounded text-sm">Report <i class="fa fa-book"></i></button>
+                </div>
+                
+        
+                <div x-show="tab === 'list'" class="overflow-x-auto">
+                    <h2 class="text-md mb-4 text-gray-500">Studies Documents </h2>
+                    <table class="w-full bg-white border rounded-lg shadow-md">
+                        <thead>
+                            <tr class="bg-gray-100">
+                                <th class="px-4 py-2 text-sm whitespace-nowrap">Title</th>
+                                <th class="px-4 py-2 text-sm whitespace-nowrap">Start Date</th>
+                                <th class="px-4 py-2 text-sm whitespace-nowrap">End Date</th>
+                                <th class="px-4 py-2 text-sm whitespace-nowrap">Duration</th>
+                                <th class="px-4 py-2 text-sm whitespace-nowrap">Category</th>
+                                <th class="px-4 py-2 text-sm whitespace-nowrap">Data Method</th>
+                                <th class="px-4 py-2 text-sm whitespace-nowrap">Donation</th>
+                                <th class="px-4 py-2 text-sm whitespace-nowrap">Program</th>
+                                <th class="px-4 py-2 text-sm whitespace-nowrap">Donor</th>
+                                <th class="px-4 py-2 text-sm whitespace-nowrap">Comments</th>
+                                <th class="px-4 py-2 text-sm whitespace-nowrap">Document</th>
+                                <th class="px-4 py-2 text-sm whitespace-nowrap">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% data.forEach(doc => { %>
+                                <tr class="border-t">
+                                    <td class="px-4 py-2 whitespace-nowrap"><%= doc.title %></td>
+                                    <td class="px-4 py-2 whitespace-nowrap"><%= new Date(doc.start_date).toISOString().split('T')[0] %></td>
+                                    <td class="px-4 py-2 whitespace-nowrap"><%= new Date(doc.end_date).toISOString().split('T')[0] %></td>
+                                    <td class="px-4 py-2 whitespace-nowrap"><%= doc.duration %></td>
+                                    <td class="px-4 py-2"><%= doc.category %></td>
+                                    <td class="px-4 py-2 whitespace-nowrap"><%= doc.data_collection_method %></td>
+                                    <td class="px-4 py-2 whitespace-nowrap"><%= doc.donation %></td>
+                                    <td class="px-4 py-2 whitespace-nowrap"><%= doc.program %></td>
+                                    <td class="px-4 py-2 whitespace-nowrap"><%= doc.donor %></td>
+                                    <td class="px-4 py-2 whitespace-nowrap"><%= doc.comments %></td>
+                                    <td class="px-4 py-2 whitespace-nowrap">
+                                        <% if (doc.document_upload != "") { %>
+                                            <a href="<%= doc.document_upload %>" class="text-blue-500 bg-blue-100 px-2 py-1 rounded" download>
+                                                <i class="fa fa-download"></i> Download
+                                            </a>
+                                        <% } else { %>
+                                            <span class="text-gray-500">No File</span>
+                                        <% } %>
+                                    </td>
+
+
+                                    <td class="px-4 py-2">
+                                        <div class="flex gap-2">
+                                            <a href="/m_estudies/edit/<%= doc.id %>" class="text-blue-500 bg-blue-100 px-2 py-1 rounded"><i class="fa fa-edit"></i></a>
+                                            <a href="/m_estudies/view/<%= doc.id %>" class="text-blue-500 bg-blue-100 px-2 py-1 rounded"><i class="fa fa-eye"></i></a>
+                                            <a href="/m_estudies/delete/<%= doc.id %>" class="text-red-500 ml-2 px-2 py-1 rounded"><i class="fa fa-trash"></i></a>
+                                    
+                                        </div>
+                                    </td>
+                                </tr>
+                                <% }) %>
+                        </tbody>
+                    </table>
+                </div>
+                <div x-cloak x-show="tab === 'form'" class="mt-4 max-w-4xl mx-auto">
+                    <h2 class="text-xl font-semibold mb-4">Create Study Document</h2>
+
+                    <form action="/m_estudies/create" method="POST" class="grid grid-cols-3 gap-4 " enctype="multipart/form-data">
+                       
+                        <div>
+                            <label class="text-sm">Title</label>
+                            <input type="text" placeholder="Title..." name="title" class="w-full px-4 py-2 border rounded" required>
+                        </div>
+                        <div>
+                            <label class="text-sm">Start Date</label>
+                            <input type="date" placeholder="Start..." name="start_date" id="startDate" class="w-full px-4 py-2 border rounded" required>
+                        </div>
+                        <div>
+                            <label class="text-sm">End Date</label>
+                            <input type="date" placeholder="End..." name="end_date" id="endDate" class="w-full px-4 py-2 border rounded" required>
+                        </div>
+                        <div>
+                            <label class="text-sm">Duration</label>
+                            <input type="text" placeholder="Duration..." name="duration" id="duration"
+                             class="w-full px-4 py-2 border rounded bg-gray-100" readonly>
+                        </div>
+                        <div>
+                            <label class="text-sm">Category</label>
+                            <input type="text" placeholder="Category..." name="category" class="w-full px-4 py-2 border rounded" required>
+                        </div>
+                        <div>
+                            <label class="text-sm">Data Collection Method</label>
+                            <input type="text" placeholder="Data..." name="data_collection_method" class="w-full px-4 py-2 border rounded" required>
+                        </div>
+                        <div>
+                            <label class="text-sm text-gray-600">Donation</label>
+                            <input type="text"  name="donation" class="w-full px-4 py-2 border rounded" required>
+                        </div>
+                        <div>
+                            <label class="text-sm text-gray-600">Program</label>
+                            <input type="text" name="program" class="w-full px-4 py-2 border rounded" required>
+                        </div>
+                        <div>
+                            <label class="text-sm text-gray-600">Donor</label>
+                            <input type="text" name="donor" class="w-full px-4 py-2 border rounded" required></div>
+                        <div 
+                        <div>
+                            <label class="text-sm text-gray-600">Document</label>
+                            <input type="file" name="document_upload" class="w-full px-4 py-2 border rounded" required></div>
+                        <div 
+                        class="col-span-3">
+                            <label class="text-sm text-gray-600">Comments</label><textarea name="comments" class="w-full px-4 py-2 border rounded"></textarea></div>
+                        <div class="col-span-3">
+                            <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded">Save</button>
+                        </div>
+                    </form>
+                </div>
+
+                
+
+                <div x-show="tab === 'report'" class="">
+
+                    <div class="flex justify-between items-center">
+                        <h2 class="text-md mb-4 text-gray-500">Report</h2>
+                        <a href="m_estudies/download" class="bg-success text-white py-2 px-3 rounded hover:text-green-800 flex items-center space-x-2">
+                            <i class="fa fa-book"></i> <!-- Excel icon -->
+                            <span>Export Excel</span>
+                        </a>
+                    </div>
+                    <!-- Small Table: Responsibles -->
+                    <div class=" bg-white my-2 overflow-x-auto">
+                        
+                        <table class="w-full bg-white border rounded-lg shadow-md">
+                            <thead>
+                                <tr class="bg-gray-100">
+                                    <th class="px-4 py-2 text-sm whitespace-nowrap">Title</th>
+                                    <th class="px-4 py-2 text-sm whitespace-nowrap">Start Date</th>
+                                    <th class="px-4 py-2 text-sm whitespace-nowrap">End Date</th>
+                                    <th class="px-4 py-2 text-sm whitespace-nowrap">Duration</th>
+                                    <th class="px-4 py-2 text-sm whitespace-nowrap">Category</th>
+                                    <th class="px-4 py-2 text-sm whitespace-nowrap">Data Method</th>
+                                    <th class="px-4 py-2 text-sm whitespace-nowrap">Donation</th>
+                                    <th class="px-4 py-2 text-sm whitespace-nowrap">Program</th>
+                                    <th class="px-4 py-2 text-sm whitespace-nowrap">Donor</th>
+                                    <th class="px-4 py-2 text-sm whitespace-nowrap">Comments</th>
+                                    
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% data.forEach(doc => { %>
+                                    <tr class="border-t">
+                                        <td class="px-4 py-2 whitespace-nowrap"><%= doc.title %></td>
+                                        <td class="px-4 py-2 whitespace-nowrap"><%= new Date(doc.start_date).toISOString().split('T')[0] %></td>
+                                        <td class="px-4 py-2 whitespace-nowrap"><%= new Date(doc.end_date).toISOString().split('T')[0] %></td>
+                                        <td class="px-4 py-2 whitespace-nowrap"><%= doc.duration %></td>
+                                        <td class="px-4 py-2"><%= doc.category %></td>
+                                        <td class="px-4 py-2 whitespace-nowrap"><%= doc.data_collection_method %></td>
+                                        <td class="px-4 py-2 whitespace-nowrap"><%= doc.donation %></td>
+                                        <td class="px-4 py-2 whitespace-nowrap"><%= doc.program %></td>
+                                        <td class="px-4 py-2 whitespace-nowrap"><%= doc.donor %></td>
+                                        <td class="px-4 py-2 whitespace-nowrap"><%= doc.comments %></td>
+                                     
+    
+    
+                                      
+                                        </td>
+                                    </tr>
+                                    <% }) %>
+                            </tbody>
+                        </table>
+                    </div>
+                
+                   
+                </div>
+                
+

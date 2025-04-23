@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= title %></title>
+    <link rel='stylesheet' href='/../stylesheets/style.css' />
+    <link rel='stylesheet' href='/../stylesheets/tailwind.css' />
+    <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+    <script src="//unpkg.com/alpinejs" defer></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css" integrity="sha512-5A8nwdMOWrSz20fDsjczgUidUBR8liPYU+WymTZP1lmY9G6Oc7HlZv156XqnsgNUzTyMefFTcsFH/tnJE/+xBg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+      [x-cloak]{
+        display: none !important;
+      }
+    </style>
+  </head>
+  <body>
+    
+   
+    <div class="grid grid-cols-6" >
+      
+       
+            <%- include("../partials/sidebar") %>
+  
+  
+      
+       <div class="col-span-5">
+        <!-- <% if (success) { %>
+            <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-4">
+              <p class="font-semibold"><%= success %></p>
+            </div>
+          <% } %>
+          
+          <% if (error) { %>
+            <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4">
+              <p class="font-semibold"><%= error %></p>
+            </div>
+          <% } %> -->
+          
+        <form action="/partnership/<%= data.id %>/update " method="POST" class="mb-4 w-2xl mx-auto">
+            <h5 class="font-bold text-green-600 py-4">UPDATE</h5>
+            <div class="grid grid-cols-2 gap-2 ">
+                <div class="col-md-4">
+                    <label class="form-label font-bold block pb-2">Program <%= data.name %></label>
+                    <input type="text" value="<%= data.program %>" class="px-3 py-1 w-full rounded border outline-none"
+                     name="program" class="px-3 py-1 w-full rounded border outline-none" placeholder="Enter program name" required >
+                </div>
+               
+     
+                <div class="col-md-4">
+                    <label class="form-label font-bold block pb-2">Start Date</label>
+                    <input type="date" value="<%= data.start_date %>" name="start_date" class="px-3 py-1 w-full rounded border outline-none" required id="startDate">
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label font-bold block pb-2">End Date</label>
+                    <input type="date" value="<%= data.closing_date %>" name="end_date" class="px-3 py-1 w-full rounded border outline-none" required id="endDate">
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label font-bold block pb-2">Duration</label>
+                    <input type="text" readonly name="duration"  class="px-3 py-1 w-full rounded border outline-none"
+                     placeholder="Enter duration (e.g., 6 months)" required id="duration" value="<%= data.duration %>">
+                </div>
+            </div>
+    
+            <div class="flex gap-4">
+                <button type="submit" class="bg-success py-2 px-3 outline-none border-none rounded mt-4 text-white  text-center">Update</button>
+                <a href="/" class="bg-red-600 py-2 px-3 outline-none border-none rounded mt-4 text-white  text-center">Cancel</a>
+    
+            </div>
+    
+       </div>
+</div>
+
+
+    
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+
+  <script>
+
+const endDate =     document.getElementById("endDate")
+   const startDate = document.getElementById("startDate")
+   const durationInput = document.getElementById("duration")
+    document.getElementById("startDate").addEventListener("input",function(){
+        // const endDate =     document.getElementById("endDate")
+        if(endDate.value  ){
+            if(startDate.value > endDate.value ){
+                alert("Starting date can not be greater than ending date")
+                startDate.value = ""
+                return 
+            }
+            const duration = calculateDuration(this.value,endDate.value)
+            durationInput.value = duration
+        }
+        
+    })
+    document.getElementById("endDate").addEventListener("input",function(){
+        // const endDate =     document.getElementById("endDate")
+        if(startDate.value ){
+            if(startDate.value > endDate.value ){
+                alert("Starting date can not be greater than ending date")
+                endDate.value = ""
+                return 
+            }
+            const duration = calculateDuration(startDate.value,this.value)
+     
+            durationInput.value = duration
+        }
+    
+    })
+
+
+const calculateDuration = (startDate, endDate) => {
+    if (startDate && endDate) {
+        const start = new Date(startDate);
+        const end = new Date(endDate);
+        const diffTime = Math.abs(end - start);
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+       return  (diffDays > 1) ? diffDays +' Days': (diffDays == 0 )?  '24hrs ':diffDays +' Day';
+      
+        
+    }
+};
+
+    </script>
+    
+    
+  </body>
+</html>
+
+
+    
+ 
+
